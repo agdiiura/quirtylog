@@ -19,7 +19,6 @@ class SQLiteHandler(logging.Handler):
 
     This class extends the logging.Handler class to provide a thread-safe logging handler
     for storing log records in an SQLite database.
-
     """
 
     @property
@@ -89,7 +88,6 @@ class SQLiteHandler(logging.Handler):
         by the `db` parameter. It also executes the initial SQL statement to create the log table if it does not exist.
 
         Example:
-
         .. code-block:: python
 
             # Initialize SQLiteHandler with the default database path
@@ -123,7 +121,6 @@ class SQLiteHandler(logging.Handler):
         based on the `created` attribute of the log record, representing the time of log record creation.
 
         Example:
-
             .. code-block:: python
 
             # Example usage of format_time in the SQLiteHandler class
@@ -152,7 +149,6 @@ class SQLiteHandler(logging.Handler):
               be efficient in high-throughput scenarios.
 
         Example:
-
         .. code-block:: python
 
             # Example usage of emit in the SQLiteHandler class

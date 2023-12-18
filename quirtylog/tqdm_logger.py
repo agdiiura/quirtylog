@@ -37,7 +37,6 @@ class TqdmToLogger(io.StringIO):
         The logger is used to direct TQDM output, and the logging level determines the severity of log messages.
 
         Example:
-
         .. code-block:: python
 
             # Example usage of __init__ method in the TqdmToLogger class

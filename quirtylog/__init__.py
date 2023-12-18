@@ -6,7 +6,6 @@ quirtylog
 The quick & dirty logging package
 
 Example:
-
     .. code-block:: python
 
     import quirtylog

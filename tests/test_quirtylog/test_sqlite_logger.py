@@ -8,12 +8,16 @@ This test check the sqlite module
 To run the code
 $ python test_sqlite_logger.py
 """
-import unittest
 import logging
 import sqlite3
-import xmlrunner
+import unittest
+
 from pathlib import Path
-from config import xml_test_folder
+
+import xmlrunner
+
+from test_quirtylog.config import xml_test_folder
+
 from quirtylog.sqlite_logger import SQLiteHandler
 
 

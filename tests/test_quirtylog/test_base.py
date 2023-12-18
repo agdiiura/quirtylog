@@ -10,7 +10,8 @@ $ python test_base.py
 """
 import unittest
 import importlib
-from config import xml_test_folder
+
+from test_quirtylog.config import xml_test_folder
 
 
 class TestImport(unittest.TestCase):

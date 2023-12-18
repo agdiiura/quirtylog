@@ -8,11 +8,13 @@ This test check the singleton module
 To run the code
 $ python test_singleton.py
 """
-import xmlrunner
 import unittest
-from quirtylog.singleton import singleton
-from config import xml_test_folder
 
+import xmlrunner
+
+from test_quirtylog.config import xml_test_folder
+
+from quirtylog.singleton import singleton
 
 
 @singleton

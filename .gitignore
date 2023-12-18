@@ -111,5 +111,7 @@ ENV/
 # VSCode
 *.DS_Store*
 
+logs/
+
 # include logo
 !logo.png

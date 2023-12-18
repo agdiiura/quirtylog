@@ -8,18 +8,19 @@ This test check the tqdm module
 To run the code
 $ python test_tqdm_logger.py
 """
-import tqdm
 import time
-import unittest
 import logging
-import xmlrunner
-from pathlib import Path
-from joblib import delayed, Parallel
-from config import xml_test_folder
+import unittest
 
+from pathlib import Path
+
+import tqdm
+import xmlrunner
+
+from joblib import Parallel, delayed
+from test_quirtylog.config import xml_test_folder
 
 from quirtylog.tqdm_logger import TqdmToLogger
-
 
 
 class TestTqdmToLogger(unittest.TestCase):
@@ -68,7 +69,7 @@ class TestTqdmToLogger(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """The tear down procedure"""
+        """Execute the tear down procedure"""
         if cls.logname.exists():
             cls.logname.unlink()
 

@@ -1,15 +1,20 @@
 """
-=========
+---------
 quirtylog
-
+---------
 
 The quick & dirty logging package
 
 Example:
->>> import quirtylog
->>> logger = quirtylog.create_logging()
->>> logger.info("Test")
+
+    .. code-block:: python
+
+    import quirtylog
+    logger = quirtylog.create_logging()
+    logger.info("Test")
+
 """
+
 from pathlib import Path
 from importlib.metadata import version
 
@@ -18,7 +23,7 @@ from .singleton import *
 
 
 def _read_version():
-    """Read version from setup.cfg"""
+    """Read version from metadata or setup.cfg"""
 
     try:
         return version('quirtylog')

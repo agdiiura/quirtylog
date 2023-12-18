@@ -9,9 +9,7 @@ The configuration file for test_quirtylog
 from pathlib import Path
 
 
-__all__ = [
-    'xml_test_folder',
-]
+__all__ = ['xml_test_folder']
 
 config_path = Path(__file__).absolute().parent
 

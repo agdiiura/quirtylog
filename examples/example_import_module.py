@@ -13,7 +13,7 @@ from my_module import my_awesome_function  # noqa: F401, I900
 import quirtylog
 
 log_path = Path().absolute() / 'logs'
-logger = quirtylog.create_logging(log_path=log_path, db='log.db')
+logger = quirtylog.create_logger(log_path=log_path, db='log.db')
 
 
 def main():

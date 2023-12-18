@@ -13,7 +13,7 @@ import quirtylog
 
 log_path = Path().absolute() / 'logs'
 
-logger = quirtylog.create_logging(log_path=log_path)
+logger = quirtylog.create_logger(log_path=log_path)
 
 
 @quirtylog.exception(logger)

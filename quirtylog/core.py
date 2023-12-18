@@ -31,7 +31,7 @@ default_log_path = Path().absolute() / 'logs'
 default_config_file = Path(__file__).absolute().parent / 'logging.yaml'
 
 __all__ = [
-    'create_logging', 'exception', 'clear_old_logs'
+    'create_logger', 'exception', 'clear_old_logs'
 ]
 
 path_matcher = re.compile(r'\$\{([^}^{]+)\}')
@@ -54,14 +54,13 @@ def retrieve_name(var) -> str:
         Use with caution and consider the context of its usage.
 
     Example:
-
     .. code-block:: python
 
         x = 42
         variable_name = retrieve_name(x)
         print(variable_name)  # Output: 'x'
-
     """
+
     callers_local_vars = inspect.currentframe().f_back.f_locals.items()
     return [var_name for var_name, var_val in callers_local_vars if var_val is var][0]
 
@@ -85,7 +84,6 @@ def path_constructor(loader, node, log_path: str | Path = 'logs') -> str:
         - The function utilizes a regular expression match to identify and replace the matched value.
 
     Example:
-
     .. code-block:: python
 
         yaml.add_constructor(
@@ -116,7 +114,6 @@ def check_path(var: str | Path, name: str = 'value') -> Path:
     :raise TypeError: If the input is not a string or a Path object.
 
     Example:
-
     .. code-block:: python
 
         file_path = check_path('/path/to/file.txt', name='file_path')
@@ -130,11 +127,12 @@ def check_path(var: str | Path, name: str = 'value') -> Path:
     return var
 
 
-def create_logging(log_path: str | Path = default_log_path,
-                   config_file: str | Path = default_config_file,
-                   name: str | None = None,
-                   db: str | None = None,
-                   remove_old_log: bool = True) -> logging.Logger:
+def create_logger(log_path: str | Path = default_log_path,
+                  config_file: str | Path = default_config_file,
+                  name: str | None = None,
+                  db: str | Path | None = None,
+                  remove_old_log: bool = True,
+                  k_min: int | str = 1) -> logging.Logger:
     """
     Create a custom logger object with optional configuration parameters.
 
@@ -143,31 +141,37 @@ def create_logging(log_path: str | Path = default_log_path,
     :param name: The logger name. If None, it is automatically determined based on the calling module and function.
     :param db: The name of the SQLite database. If provided, a SQLiteHandler will be added to the logger.
     :param remove_old_log: A flag indicating whether to remove old log files from the specified log path.
+    :param k_min: The minimum number of log files to keep in the history (default: 1).
+            If `k_min` is a string, it will be converted to an integer.
 
     :return: The custom logger object.
 
     :raise TypeError: If `name` is not a string.
 
     .. note::
-
         - The `log_path` and `config_file` parameters support both string and Path types.
         - If `remove_old_log` is True, old log files in the specified log path will be cleared.
         - If `name` is not provided, it is automatically generated based on the calling module and function.
-        - If `config_file` is provided, the logger is configured using the YAML configuration file; otherwise, a basic configuration is applied.
+        - If `config_file` is provided, the logger is configured using the YAML configuration file;
+            otherwise, a basic configuration is applied.
         - If `db` is provided, a SQLiteHandler with the specified database is added to the logger.
 
     Example:
-
     .. code-block:: python
 
-        custom_logger = create_logging(log_path='/path/to/logs', config_file='logging_config.yml', name='my_logger', db='my_db')
+        custom_logger = create_logging(
+            log_path='/path/to/logs',
+            config_file='logging_config.yml',
+            name='my_logger',
+            db='my_db'
+        )
         custom_logger.info('Custom logger initialized successfully.')
 
     """
     log_path = check_path(var=log_path, name=retrieve_name(log_path))
 
     if remove_old_log:
-        clear_old_logs(log_path=log_path)
+        clear_old_logs(log_path=log_path, k_min=k_min)
 
     if name is None:
         calling_frame = inspect.stack()[1]
@@ -228,17 +232,17 @@ def create_logging(log_path: str | Path = default_log_path,
 
 def exception(logger: logging.Logger, level: str = 'info'):
     """
-    Decorator for managing exceptions with a specified logger.
+    Create a decorator for managing exceptions with a specified logger.
 
     This decorator wraps the provided function, logging any exceptions that occur during its execution.
 
     :param logger: The logging object to be used for logging exceptions.
-    :param level: The logging level for exception messages (default: 'info'). Possible values: {'info', 'debug', 'warning', 'error'}.
+    :param level: The logging level for exception messages (default: 'info').
+        Possible values: {'info', 'debug', 'warning', 'error'}.
 
-    :return decorator: The decorator function.
+    :return: The decorator function.
 
     Usage:
-
     .. code-block:: python
 
         @exception(logger=my_logger, level='error')
@@ -246,7 +250,6 @@ def exception(logger: logging.Logger, level: str = 'info'):
             # Function implementation
 
     .. note::
-
         - The `logger` parameter should be an instance of the logging.Logger class.
         - The `level` parameter determines the logging level for exception messages.
         - The decorator logs the total execution time of the wrapped function and any exceptions that occur.
@@ -254,7 +257,6 @@ def exception(logger: logging.Logger, level: str = 'info'):
         - The decorator re-raises the exception after logging.
 
     Example:
-
     .. code-block:: python
 
         @exception(logger=my_logger, level='error')
@@ -306,14 +308,12 @@ def clear_old_logs(log_path: str | Path = default_log_path,
         If `k_min` is a string, it will be converted to an integer.
 
     .. note::
-
         - The function utilizes the `check_path` function to validate and convert the `log_path` parameter.
         - Log files with filenames in the format "<name>.log.<digit>" are considered for deletion.
         - The parameter `k_min` determines the minimum number of log files to retain; older files are deleted.
         - If the log folder does not exist, no files are removed.
 
     Example:
-
     .. code-block:: python
 
         # Remove log files in the '/path/to/logs' folder, keeping at least 2 files in the history

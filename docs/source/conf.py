@@ -14,13 +14,15 @@
 #
 import os
 import sys
+from pathlib import Path
 
 import git
 
-sys.path.insert(0, os.path.abspath('../../quirtylog'))
-sys.path.insert(0, os.path.abspath('../../'))
+base_folder = Path(__file__).absolute()
+sys.path.insert(0, os.path.abspath(base_folder / '..' / '..' / 'quirtylog'))
+sys.path.insert(0, os.path.abspath(base_folder / '..' / '..'))
 
-repo = git.Repo('../../')
+repo = git.Repo(os.path.abspath(base_folder / '..' / '..' / '..'))
 
 # -- Project information -----------------------------------------------------
 
@@ -28,8 +30,10 @@ project = 'quirtylog'
 copyright = '2023'
 author = 'agdiiura'
 
-version_list = sorted(repo.tags, key=lambda t: t.commit.committed_date)
-version = version_list[-1]
+try:
+    version = str(max(repo.tags, key=lambda t: t.commit.committed_date))
+except Exception:
+    version = 'beta'
 
 # -- General configuration ---------------------------------------------------
 
@@ -43,9 +47,9 @@ version = version_list[-1]
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
-    'sphinxcontrib.confluencebuilder',
     'sphinx.ext.autosectionlabel',
-    #'recommonmark',
+    # 'recommonmark',
+    'sphinx_autodoc_typehints',
     'm2r2'
 ]
 
@@ -76,7 +80,7 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -108,7 +112,6 @@ autosummary_generate = True
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 # html_static_path = ['_static']
-
 
 
 # Custom sidebar templates, must be a dictionary that maps document names
@@ -154,9 +157,9 @@ latex_documents = [(
     master_doc,
     f'{project}.tex',
     f'{project} Documentation',
-     author,
+    author,
     'manual'
-),]
+), ]
 
 # -- Options for manual page output ------------------------------------------
 
@@ -166,7 +169,7 @@ man_pages = [(
     master_doc,
     project,
     f'{project} Documentation',
-     [author],
+    [author],
     1)
 ]
 

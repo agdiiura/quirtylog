@@ -1,0 +1,59 @@
+![Alt text](logo.png?raw=true "Title")
+
+# ⚡ quirtylog ⚡
+
+
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+
+Quick & dirty logging in python.
+
+
+The file `requirements.txt` contains the packages needed for the installation. 
+The code requires `python3.11+`.
+
+### Installation
+To install the package the simplest procedure is:
+```bash
+pip install quirtylog
+```
+Now you can test the installation... In a python shell:
+
+```python
+import quirtylog
+
+quirtylog.__version__
+```
+
+#### Installation from source
+Once you have cloned the repository
+```bash
+pip install .
+```
+To use the develop mode just write `pip install -e .`.
+
+
+### Examples
+The package creates custom loggers object.
+
+```python
+import quirtylog
+
+log_path = "/path/to/logs"
+logger = quirtylog.create_logging(log_path=log_path)
+```
+It is also possible to create decorators to be
+used in a user-defined function.
+```python
+@quirtylog.exception(logger)
+def f(x):
+    """A function that raise an exception"""
+    return x/0.
+```
+
+For further examples see the folder [`examples`](examples).
+
+### Contributing
+If you want to contribute to this project, please follow the guidelines in the [CONTRIBUTING.md](CONTRIBUTING.md).
+
+### Offical soundtrack
+[Jhonny Cash - The Frozen Logger](https://www.youtube.com/watch?v=KUfzDIKGkQI)

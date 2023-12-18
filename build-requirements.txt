@@ -1,0 +1,9 @@
+coverage==6.2
+flake8==4.0.1
+flake8-docstrings==1.6.0
+flake8-formatter-junit-xml==0.0.6
+flake8-requirements==1.5.1
+isort==5.10.1
+pre-commit==2.16.0
+setuptools-git-versioning==1.7.4
+xmlrunner==1.7.7

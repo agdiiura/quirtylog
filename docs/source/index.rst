@@ -28,7 +28,7 @@ Example
    # Create custom logger object
    import quirtylog
    log_path = "/path/to/logs"
-   logger = quirtylog.create_logging(log_path=log_path)
+   logger = quirtylog.create_logger(log_path=log_path)
 
    # Handle exception
    @quirtylog.exception(logger)

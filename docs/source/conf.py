@@ -14,6 +14,7 @@
 #
 import os
 import sys
+
 from pathlib import Path
 
 import git
@@ -179,8 +180,11 @@ man_pages = [(
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, project, f'{project} Documentation',
-     author, project, 'One line description of project.',
+    (master_doc,
+     project,
+     f'{project} Documentation',
+     author, project,
+     'Quick & Dirty logging in python',
      'Miscellaneous'),
 ]
 

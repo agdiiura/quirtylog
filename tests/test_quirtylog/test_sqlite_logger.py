@@ -21,14 +21,6 @@ from test_quirtylog.config import xml_test_folder
 from quirtylog.sqlite_logger import SQLiteHandler
 
 
-def make_db(db):
-    db = Path('..') / 'logs'
-    db.mkdir(exist_ok=True)
-    db = cls.db / 'test.db'
-    if db.exists():
-        db.unlink()
-
-
 class TestSQLiteHandler(unittest.TestCase):
     """The base class for SQLiteHandler test"""
 
@@ -98,7 +90,6 @@ class TestSQLiteHandler(unittest.TestCase):
 
         cursor = conn.execute(f'SELECT COUNT(*) FROM {sh.log_table};')
         rows = cursor.fetchall()[0][0]
-        print(rows)
         self.assertEqual(rows, 2)
 
         cursor = conn.execute(f'SELECT Message FROM {sh.log_table};')

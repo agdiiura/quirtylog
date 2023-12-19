@@ -138,6 +138,8 @@ def create_logger(log_path: str | Path = default_log_path,
 
     :param log_path: The folder path for storing log files. Defaults to `default_log_path`.
     :param config_file: The configuration file path. Defaults to `default_config_file`.
+        If `config_file` is provided, the logger is configured using the YAML configuration file;
+        otherwise, a basic configuration is applied.
     :param name: The logger name. If None, it is automatically determined based on the calling module and function.
     :param db: The name of the SQLite database. If provided, a SQLiteHandler will be added to the logger.
     :param remove_old_log: A flag indicating whether to remove old log files from the specified log path.
@@ -147,14 +149,6 @@ def create_logger(log_path: str | Path = default_log_path,
     :return: The custom logger object.
 
     :raise TypeError: If `name` is not a string.
-
-    .. note::
-        - The `log_path` and `config_file` parameters support both string and Path types.
-        - If `remove_old_log` is True, old log files in the specified log path will be cleared.
-        - If `name` is not provided, it is automatically generated based on the calling module and function.
-        - If `config_file` is provided, the logger is configured using the YAML configuration file;
-            otherwise, a basic configuration is applied.
-        - If `db` is provided, a SQLiteHandler with the specified database is added to the logger.
 
     Example:
     .. code-block:: python
@@ -250,8 +244,6 @@ def exception(logger: logging.Logger, level: str = 'info'):
             # Function implementation
 
     .. note::
-        - The `logger` parameter should be an instance of the logging.Logger class.
-        - The `level` parameter determines the logging level for exception messages.
         - The decorator logs the total execution time of the wrapped function and any exceptions that occur.
         - Exceptions are logged with their class name, error message, and stack trace.
         - The decorator re-raises the exception after logging.

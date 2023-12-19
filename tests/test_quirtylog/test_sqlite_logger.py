@@ -101,7 +101,7 @@ class TestSQLiteHandler(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """The tear down procedure"""
+        """Execute the tear down procedure"""
         if cls.db.exists():
             cls.db.unlink()
 

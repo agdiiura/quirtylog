@@ -3,8 +3,11 @@
 my_module.py
 ------------
 
-A module for test about import from different modules
-See documentation: https://docs.python.org/3/howto/logging.html#logging-from-multiple-modules
+This module serves as a test module for demonstrating imports from different modules and
+logging functionalities.
+It contains a function 'my_awesome_function' that logs information using the Python logging module.
+
+For more details on the Python logging module, see: https://docs.python.org/3/library/logging.html
 """
 import logging
 

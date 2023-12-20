@@ -18,12 +18,11 @@ class TqdmToLogger(io.StringIO):
     This class provides an output stream for TQDM (progress bar library) that directs the output
     to a specified logger instead of the standard output.
 
-    Attributes:
-    - logger (Logger): The logger object to which the TQDM output is directed.
-    - level (str): The logging level to be used when emitting log messages.
     """
 
+    #: The logger object to which the TQDM output is directed.
     logger = None
+    #: The logging level to be used when emitting log messages.
     level = None
     buf = ''
 
@@ -31,25 +30,25 @@ class TqdmToLogger(io.StringIO):
         """
         Initialize the TqdmToLogger instance.
 
-        Parameters:
-        - logger: A logger object to which TQDM output will be directed.
-        - level: The logging level to be used (default: logging.INFO).
+        :param logger: A logger object to which TQDM output will be directed.
+        :param level: The logging level to be used (default: logging.INFO).
 
         This method initializes the TqdmToLogger instance with the specified logger and logging level.
         The logger is used to direct TQDM output, and the logging level determines the severity of log messages.
 
         Example:
-        ```python
-        # Example usage of __init__ method in the TqdmToLogger class
-        import logging
-        from TqdmToLoggerModule import TqdmToLogger
+        .. code-block:: python
 
-        # Create a logger
-        logger = logging.getLogger(__name__)
+            # Example usage of __init__ method in the TqdmToLogger class
+            import logging
+            from TqdmToLoggerModule import TqdmToLogger
 
-        # Initialize TqdmToLogger with the logger and custom logging level
-        tqdm_out_logger = TqdmToLogger(logger=logger, level=logging.INFO)
-        ```
+            # Create a logger
+            logger = logging.getLogger(__name__)
+
+            # Initialize TqdmToLogger with the logger and custom logging level
+            tqdm_out_logger = TqdmToLogger(logger=logger, level=logging.INFO)
+
         """
         super(TqdmToLogger, self).__init__()
         self.logger = logger
@@ -59,8 +58,7 @@ class TqdmToLogger(io.StringIO):
         """
         Write the specified buffer content.
 
-        Parameters:
-        - buf: The buffer content to be written.
+        :param buf: The buffer content to be written.
         """
         self.buf = buf.strip('\r\n\t ')
 

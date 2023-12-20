@@ -1,9 +1,16 @@
 """
--------------------
-test_name_logger.py
--------------------
+----------------------
+example_name_logger.py
+-----------------------
 
-Test the logger name defined with the current frame
+This script tests the logger name definition using the 'quirtylog' module based on the current frame.
+It demonstrates the creation of a logger and its use within a simple test function.
+
+Usage:
+Run the script to execute the 'func' function, which logs an informational message and returns a value.
+
+.. note::
+    Ensure that the 'quirtylog' module is installed before running this script.
 """
 
 from pathlib import Path
@@ -12,7 +19,7 @@ import quirtylog
 
 log_path = Path().absolute() / 'logs'
 
-logger = quirtylog.create_logging(log_path=log_path)
+logger = quirtylog.create_logger(log_path=log_path)
 
 
 def func():

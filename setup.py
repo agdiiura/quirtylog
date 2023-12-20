@@ -24,9 +24,9 @@ def _read_reqs(path: Path, filename: str) -> list:
     """Read requirements base function"""
     file_name = path / filename
     with open(file_name, 'r') as file:
-        requirements = file.read().splitlines()
+        reqs = file.read().splitlines()
 
-    return requirements
+    return reqs
 
 
 def read_reqs(path: Path) -> list:
@@ -36,10 +36,10 @@ def read_reqs(path: Path) -> list:
     :param path: (Path) package path
     :return requirements: (list) list of requirements
     """
-    requirements = _read_reqs(path=path, filename='requirements.txt')
-    requirements.append('setuptools-git-versioning')
+    reqs = _read_reqs(path=path, filename='requirements.txt')
+    reqs.append('setuptools-git-versioning')
 
-    return requirements
+    return reqs
 
 
 def read_docreqs(path: Path) -> list:
@@ -79,7 +79,6 @@ def read_authors(path: Path) -> str:
 if __name__ == '__main__':
     """The main script"""
 
-    INSTALL_REQS = True
     absolute_path = Path(__file__).resolve().parent
 
     pkg_name = 'quirtylog'
@@ -108,8 +107,7 @@ if __name__ == '__main__':
         install_requires=requirements,
         setup_requires=requirements,
         classifiers=[
-            'Programming Language :: Python :: 3.9',
-            'Programming Language :: Python :: 3.10',
+            'Programming Language :: Python :: 3.11',
         ],
         extra_requires={
             'docs': read_docreqs(absolute_path),

@@ -28,10 +28,10 @@ Example
    # Create custom logger object
    import quirtylog
    log_path = "/path/to/logs"
-   logger = quirtylog.create_logging(log_path=log_path)
+   logger = quirtylog.create_logger(log_path=log_path)
 
-   # Handle exception
-   @quirtylog.exception(logger)
+   # Handle exception and get execution time
+   @quirtylog.measure_time(logger)
    def f(x):
       """A function that raise an exception"""
       return x/0.

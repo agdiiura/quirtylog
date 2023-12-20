@@ -3,11 +3,24 @@
 suite.py
 --------
 
-A script to dominate all the test_quickforce.
+A script to execute and manage tests defined in the 'test_quirtylog' package.
 
-Run in a shell
-$ python suite.py -t <path/to/test.py>
-$ python suite.py -t <path/to/folder/>
+Usage:
+Run the script in a shell using the following commands:
+- To run a single test file:
+  $ python suite.py -t <path/to/test.py>
+- To run all test files in a folder:
+  $ python suite.py -t <path/to/folder/>
+
+Dependencies:
+- pandas: Required for timestamp handling and summary creation.
+- xmlrunner: Required for generating XML test reports.
+- colorama: Used for colored console output.
+- test_quirtylog.config: Import required configurations from the 'test_quirtylog' package.
+
+.. note::
+    Ensure that the required dependencies are installed before running this script.
+
 """
 import argparse
 import unittest
@@ -62,12 +75,11 @@ def make_summary(test_results: dict):
             print(f'{Style.DIM + Back.LIGHTRED_EX}Error with `{t}`{Style.RESET_ALL}')
 
 
-def run_test(file: Path, bamboo: bool = False):
+def run_test(file: Path):
     """
     Execute the test
 
     :param file: (Path) test file path
-    :param bamboo: (bool) a flag to avoid connection to databases
     """
     runner = xmlrunner.XMLTestRunner(output=xml_test_folder)
 
@@ -76,10 +88,7 @@ def run_test(file: Path, bamboo: bool = False):
 
     build_suite = getattr(module, 'build_suite')
     try:
-        if not bamboo:
-            suite = build_suite()
-        else:
-            suite = build_suite(bamboo=bamboo)
+        suite = build_suite()
     except Exception as e:
         suite = build_error_suite(module=file, exception=e)
 

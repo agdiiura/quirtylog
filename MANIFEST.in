@@ -4,3 +4,9 @@ include *requirements.txt
 include quirtylog/*.yaml
 include *.ini
 include setup.cfg
+# Include the README
+include *.md
+include *requirements.txt
+include quirtylog/*.yaml
+include *.ini
+include setup.cfg

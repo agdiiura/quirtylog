@@ -30,8 +30,7 @@ class TestSQLiteHandler(unittest.TestCase):
         cls.db = Path('..') / 'logs'
         cls.db.mkdir(exist_ok=True)
         cls.db = cls.db / 'test.db'
-        if cls.db.exists():
-            cls.db.unlink()
+        cls.db.unlink(missing_ok=True)
 
     def test_sqlite_info(self):
         """Test the SQLLiteHandler"""
@@ -63,8 +62,7 @@ class TestSQLiteHandler(unittest.TestCase):
         mess = cursor.fetchall()[0][0]
         self.assertEqual(message, mess)
 
-        if self.db.exists():
-            self.db.unlink()
+        self.db.unlink(missing_ok=True)
 
     def test_sqlite_error(self):
         """Test the SQLLiteHandler"""
@@ -96,19 +94,19 @@ class TestSQLiteHandler(unittest.TestCase):
         mess = cursor.fetchall()[0][0]
         self.assertEqual(message, mess)
 
-        if self.db.exists():
-            self.db.unlink()
+        self.db.unlink(missing_ok=True)
 
     @classmethod
     def tearDownClass(cls):
         """Execute the tear down procedure"""
-        if cls.db.exists():
-            cls.db.unlink()
+        cls.db.unlink(missing_ok=True)
 
 
 def build_suite():
     """Built the TestSuite"""
+
     suite = unittest.TestSuite()
+
     suite.addTest(TestSQLiteHandler('test_sqlite_info'))
     suite.addTest(TestSQLiteHandler('test_sqlite_error'))
 

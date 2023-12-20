@@ -32,28 +32,28 @@ log_path = Path().absolute() / 'logs'
 logger = quirtylog.create_logger(log_path=log_path)
 
 
-@quirtylog.exception(logger)
+@quirtylog.measure_time(logger)
 def good_function():
     """Execute a function that has an INFO status"""
     time.sleep(5)
     return 'abc'
 
 
-@quirtylog.exception(logger, level='debug')
+@quirtylog.measure_time(logger, level='debug')
 def debug_function():
     """Execute a function that has a DEBUG status"""
     time.sleep(5)
     return 0
 
 
-@quirtylog.exception(logger, level='warning')
+@quirtylog.measure_time(logger, level='warning')
 def warning_function():
     """Execute a function that has a WARNING status"""
     time.sleep(5)
     return 'efg'
 
 
-@quirtylog.exception(logger)
+@quirtylog.measure_time(logger)
 def bad_function():
     """Execute a function that has an ERROR status"""
     return 1 / 0.

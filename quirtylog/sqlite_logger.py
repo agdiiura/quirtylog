@@ -10,6 +10,7 @@ import time
 import logging
 import sqlite3
 
+from logging import LogRecord
 from pathlib import Path
 
 
@@ -111,7 +112,7 @@ class SQLiteHandler(logging.Handler):
         conn.commit()
 
     @staticmethod
-    def format_time(record):
+    def format_time(record: LogRecord):
         """
         Create a time-stamp for the log record.
 
@@ -132,7 +133,7 @@ class SQLiteHandler(logging.Handler):
 
         record.dbtime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(record.created))
 
-    def emit(self, record: str):
+    def emit(self, record: LogRecord):
         """
         Emit the log message by formatting and inserting the log record into the SQLite database.
 

@@ -43,11 +43,21 @@ logger = quirtylog.create_logger(log_path=log_path)
 ```
 It is also possible to create decorators to be
 used in a user-defined function.
+
 ```python
-@quirtylog.exception(logger)
+import quirtylog
+
+
+@quirtylog.measure_time(logger)
 def f(x):
+    """A function that do nothing"""
+    return x
+
+
+@quirtylog.measure_time(logger)
+def g(x):
     """A function that raise an exception"""
-    return x/0.
+    return x / 0.
 ```
 
 For further examples see the folder [`examples`](examples).

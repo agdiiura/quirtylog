@@ -9,7 +9,7 @@ Example:
     .. code-block:: python
 
     import quirtylog
-    logger = quirtylog.create_logging()
+    logger = quirtylog.create_logger()
     logger.info("Test")
 
 """

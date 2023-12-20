@@ -31,7 +31,7 @@ default_log_path = Path().absolute() / 'logs'
 default_config_file = Path(__file__).absolute().parent / 'logging.yaml'
 
 __all__ = [
-    'create_logger', 'exception', 'clear_old_logs'
+    'create_logger', 'measure_time', 'clear_old_logs'
 ]
 
 path_matcher = re.compile(r'\$\{([^}^{]+)\}')
@@ -224,14 +224,14 @@ def create_logger(log_path: str | Path = default_log_path,
     return logger
 
 
-def exception(logger: logging.Logger, level: str = 'info'):
+def measure_time(logger: logging.Logger, level: str = 'info'):
     """
-    Create a decorator for managing exceptions with a specified logger.
+    Create a decorator for computing execution time and managing exceptions with a specified logger.
 
-    This decorator wraps the provided function, logging any exceptions that occur during its execution.
+    This decorator wraps the provided function measuring time, logging any exceptions that occur during its execution.
 
     :param logger: The logging object to be used for logging exceptions.
-    :param level: The logging level for exception messages (default: 'info').
+    :param level: The logging level for info messages (default: 'info').
         Possible values: {'info', 'debug', 'warning', 'error'}.
 
     :return: The decorator function.
@@ -239,7 +239,7 @@ def exception(logger: logging.Logger, level: str = 'info'):
     Usage:
     .. code-block:: python
 
-        @exception(logger=my_logger, level='error')
+        @measure_time(logger=my_logger, level='error')
         def my_function():
             # Function implementation
 
@@ -251,7 +251,7 @@ def exception(logger: logging.Logger, level: str = 'info'):
     Example:
     .. code-block:: python
 
-        @exception(logger=my_logger, level='error')
+        @measure_time(logger=my_logger, level='error')
         def divide(a, b):
             return a / b
 
@@ -271,12 +271,12 @@ def exception(logger: logging.Logger, level: str = 'info'):
                 result = func(*args, **kwargs)
                 dt = time.time() - start
 
-                lgr(f'Execute {func_name}. Total time {dt:.3f} [s]')
+                lgr(f'`{func_name}` executed. Total time {dt:.3f} [s]')
                 return result
 
             except Exception as e:
                 # log the exception
-                err = f'Execute {func_name}: {e.__class__.__name__} {e}'
+                err = f'Error in `{func_name}`. {e.__class__.__name__}: {e}'
                 logger.error(err, exc_info=True)
 
                 # re-raise the exception

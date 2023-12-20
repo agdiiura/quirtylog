@@ -19,7 +19,7 @@ database connection ('log.db').
 
 from pathlib import Path
 
-from my_module import my_awesome_function  # noqa: F401, I900
+from my_module import my_awesome_function
 
 import quirtylog
 

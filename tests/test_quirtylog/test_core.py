@@ -8,12 +8,13 @@ Test the core module
 To run the code
 $ python test_core.py
 """
+from random import randint
 import unittest
 from uuid import uuid4
 import shutil
 from pathlib import Path
 from test_quirtylog.config import xml_test_folder
-from quirtylog.core import retrieve_name, check_path, create_logger
+from quirtylog.core import retrieve_name, check_path, create_logger, clear_old_logs
 from logging import Logger
 
 
@@ -123,6 +124,31 @@ class TestCreateLogger(ABCTestLogger):
         self._assert_logs(logger=lgr, expected_name='totti')
 
 
+class TestClearOldLogs(ABCTestLogger):
+    """Test the clear_old_logs function"""
+
+    def test_call(self):
+        """Test the function"""
+
+        k_min = 2
+        k_max = randint(1, 10)
+        names = ['info', 'debug', 'warn', 'errors']
+
+        for name in names:
+
+            for k in range(k_max):
+                filename = self.log_folder / f'{name}.log.{k}'
+                filename.touch()
+
+        clear_old_logs(self.log_folder, k_min=k_min)
+
+        for name in names:
+            for k in range(k_min + 1, k_max):
+                filename = self.log_folder / f'{name}.log.{k}'
+
+                self.assertFalse(filename.exists(), f'{filename} exists')
+
+
 def build_suite():
     """Build the TestSuite"""
     suite = unittest.TestSuite()
@@ -136,6 +162,8 @@ def build_suite():
 
     suite.addTest(TestCreateLogger('test_create_simple_logger'))
     suite.addTest(TestCreateLogger('test_create_named_logger'))
+
+    suite.addTest(TestClearOldLogs('test_call'))
 
     return suite
 

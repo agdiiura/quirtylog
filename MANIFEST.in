@@ -4,3 +4,4 @@ include *requirements.txt
 include quirtylog/*.yaml
 include *.ini
 include setup.cfg
+include AUTHORS.rst

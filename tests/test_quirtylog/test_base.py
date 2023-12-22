@@ -27,6 +27,7 @@ class TestImport(unittest.TestCase):
 def build_suite():
     """Build the TestSuite"""
     suite = unittest.TestSuite()
+
     suite.addTest(TestImport('test_import'))
 
     return suite

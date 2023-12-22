@@ -50,8 +50,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.autosectionlabel',
     # 'recommonmark',
-    'sphinx_autodoc_typehints',
-    'm2r2'
+    'sphinx_autodoc_typehints'
 ]
 
 autodoc_default_options = {

@@ -27,7 +27,7 @@ repos:
       - id: flake8
         additional_dependencies: [
           'flake8-docstrings==1.7.0',
-          'flake8-requirements==1.7.8'
+          'flake8-requirements==2.0.1'
         ]
         args: ["--requirements-file", 'requirements.txt']
   - repo: https://github.com/PyCQA/isort
@@ -50,3 +50,14 @@ repos:
     hooks:
       - id: docker-compose-check
 
+ci:
+    autofix_commit_msg: |
+        [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+        for more information, see https://pre-commit.ci
+    autofix_prs: true
+    autoupdate_branch: ''
+    autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+    autoupdate_schedule: weekly
+    skip: []
+    submodules: false

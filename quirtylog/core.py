@@ -168,17 +168,23 @@ def create_logger(log_path: str | Path = default_log_path,
         clear_old_logs(log_path=log_path, k_min=k_min)
 
     if name is None:
-        calling_frame = inspect.stack()[1]
-        calling_frame_name = calling_frame[1].replace('.py', '')
-        # by default, we consider only the last two stack
-        calling_frame_name = '.'.join(calling_frame_name.split('/')[-2:])
+        stack = inspect.stack()
+        if len(stack) > 1:
+            calling_frame = stack[1]
+            calling_frame_name = calling_frame[1].replace('.py', '')
+            # by default, we consider only the last two stack
+            calling_frame_name = '.'.join(calling_frame_name.split('/')[-2:])
 
-        calling_function_name = inspect.getmodule(calling_frame[0]).__name__
+            calling_function_name = inspect.getmodule(calling_frame[0]).__name__
 
-        if calling_frame_name != calling_function_name:
-            name = f'{calling_frame_name}.{calling_function_name}'
+            if calling_frame_name != calling_function_name:
+                name = f'{calling_frame_name}.{calling_function_name}'
+            else:
+                name = calling_function_name
+
         else:
-            name = calling_function_name
+            # here in the main thread in REPL
+            name = '__main__'
 
     elif not isinstance(name, str):
         raise TypeError('`name` is str')

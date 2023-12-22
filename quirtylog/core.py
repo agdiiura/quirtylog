@@ -27,14 +27,19 @@ import coloredlogs
 
 from .sqlite_logger import SQLiteHandler
 
-default_log_path = Path().absolute() / 'logs'
-default_config_file = Path(__file__).absolute().parent / 'logging.yaml'
-
 __all__ = [
     'create_logger', 'measure_time', 'clear_old_logs'
 ]
 
 path_matcher = re.compile(r'\$\{([^}^{]+)\}')
+
+
+def _serve_default_log_path() -> Path:
+    return Path().absolute() / 'logs'
+
+
+def _serve_default_config_path() -> Path:
+    return Path(__file__).absolute().parent / 'logging.yaml'
 
 
 def retrieve_name(var) -> str:
@@ -127,8 +132,8 @@ def check_path(var: str | Path, name: str = 'value') -> Path:
     return var
 
 
-def create_logger(log_path: str | Path = default_log_path,
-                  config_file: str | Path = default_config_file,
+def create_logger(log_path: str | Path | None = None,
+                  config_file: str | Path | None = 'default',
                   name: str | None = None,
                   db: str | Path | None = None,
                   remove_old_log: bool = True,
@@ -136,8 +141,8 @@ def create_logger(log_path: str | Path = default_log_path,
     """
     Create a custom logger object with optional configuration parameters.
 
-    :param log_path: The folder path for storing log files. Defaults to `default_log_path`.
-    :param config_file: The configuration file path. Defaults to `default_config_file`.
+    :param log_path: The folder path for storing log files. Defaults to `logs/`.
+    :param config_file: The configuration file path. Defaults to `default`.
         If `config_file` is provided, the logger is configured using the YAML configuration file;
         otherwise, a basic configuration is applied.
     :param name: The logger name. If None, it is automatically determined based on the calling module and function.
@@ -153,15 +158,17 @@ def create_logger(log_path: str | Path = default_log_path,
     Example:
     .. code-block:: python
 
-        custom_logger = create_logging(
-            log_path='/path/to/logs',
-            config_file='logging_config.yml',
-            name='my_logger',
-            db='my_db'
-        )
+        path = '/path/to/logs'
+        config = 'logging_config.yml'
+        name = 'my_logger'
+        db = 'log.db'
+        custom_logger = create_logging(log_path=path, config_file=config, name=name, db=db)
         custom_logger.info('Custom logger initialized successfully.')
 
     """
+
+    if log_path is None:
+        log_path = _serve_default_log_path()
     log_path = check_path(var=log_path, name=retrieve_name(log_path))
 
     if remove_old_log:
@@ -192,6 +199,9 @@ def create_logger(log_path: str | Path = default_log_path,
     log_path.mkdir(parents=True, exist_ok=True)
 
     if config_file is not None:
+        if config_file == 'default':
+            config_file = _serve_default_config_path()
+
         config_file = check_path(var=config_file, name=retrieve_name(config_file))
 
         yaml.add_implicit_resolver('!path', path_matcher)
@@ -243,6 +253,7 @@ def measure_time(logger: logging.Logger, level: str = 'info'):
     :return: The decorator function.
 
     Usage:
+
     .. code-block:: python
 
         @measure_time(logger=my_logger, level='error')
@@ -293,7 +304,7 @@ def measure_time(logger: logging.Logger, level: str = 'info'):
     return decorator
 
 
-def clear_old_logs(log_path: str | Path = default_log_path,
+def clear_old_logs(log_path: str | Path | None = None,
                    k_min: str | int = 1):
     """
     Delete old log files in the specified folder.
@@ -318,6 +329,8 @@ def clear_old_logs(log_path: str | Path = default_log_path,
         clear_old_logs(log_path='/path/to/logs', k_min=2)
 
     """
+    if log_path is None:
+        log_path = _serve_default_log_path()
 
     log_path = check_path(var=log_path, name=retrieve_name(log_path))
     if isinstance(k_min, str):

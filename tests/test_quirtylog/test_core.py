@@ -8,14 +8,23 @@ Test the core module
 To run the code
 $ python test_core.py
 """
-from random import randint
-import unittest
-from uuid import uuid4
+import time
 import shutil
-from pathlib import Path
-from test_quirtylog.config import xml_test_folder
-from quirtylog.core import retrieve_name, check_path, create_logger, clear_old_logs
+import unittest
+
+from uuid import uuid4
+from random import randint
 from logging import Logger
+from pathlib import Path
+
+from test_quirtylog.config import xml_test_folder
+
+from quirtylog.core import (check_path, measure_time, create_logger,
+                            retrieve_name, clear_old_logs)
+
+
+def _mock_bad_func():
+    return 1 / 0
 
 
 class TestRetrieveName(unittest.TestCase):
@@ -108,20 +117,94 @@ class TestCreateLogger(ABCTestLogger):
     def test_create_simple_logger(self):
         """Test the function with default options"""
 
-        lgr = create_logger(log_path=self.log_folder)
+        lgr = create_logger(log_path=self.log_folder, remove_old_log=False)
 
         self.assertIsInstance(lgr, Logger)
 
         self._assert_logs(logger=lgr, expected_name='test_core')
 
     def test_create_named_logger(self):
-        """Test the function with default options"""
+        """Test the function with name defined by user"""
 
         lgr = create_logger(log_path=self.log_folder, name='totti')
 
         self.assertIsInstance(lgr, Logger)
 
         self._assert_logs(logger=lgr, expected_name='totti')
+
+    def test_create_with_none_yaml(self):
+        """Test the function with config None"""
+
+        lgr = create_logger(log_path=self.log_folder, name='config_none', config_file=None)
+
+        self.assertIsInstance(lgr, Logger)
+        lgr.info('What')
+
+    def test_create_with_custom_yaml(self):
+        """Test the function with config defined by user"""
+
+        log_filename = self.log_folder / 'info.log'
+
+        config_content = f'''
+        version: 1
+        disable_existing_loggers: true
+        formatters:
+          simple:
+            format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        handlers:
+          console:
+            class: logging.StreamHandler
+            level: INFO
+            formatter: simple
+            stream: ext://sys.stdout
+          file:
+            class: logging.FileHandler
+            level: DEBUG
+            filename: {str(log_filename)}
+        loggers:
+          simpleExample:
+            level: DEBUG
+            handlers: [console]
+            propagate: no
+        root:
+          level: DEBUG
+          handlers: [console,file]
+        '''
+
+        config_file = Path('config.yaml')
+        if config_file.exists():
+            config_file.unlink()
+
+        with open(config_file, 'w') as f:
+            f.write(config_content)
+
+        lgr = create_logger(log_path=self.log_folder, config_file=config_file, name='using_config')
+        txt = 'my_awesome_message'
+        lgr.info(txt)
+
+        self.assertTrue(log_filename.exists())
+
+        with open(log_filename, 'r') as f:
+            content = f.read()
+
+        self.assertEqual(len(content.split('\n')), 2)
+        self.assertIn(txt, content)
+
+        if config_file.exists():
+            config_file.unlink()
+
+        if log_filename.exists():
+            log_filename.unlink()
+
+    def test_create_db(self):
+        """Test the function with db option"""
+
+        dbname = 'log.db'
+        lgr = create_logger(log_path=self.log_folder, db=dbname)
+        self.assertIsInstance(lgr, Logger)
+
+        db = self.log_folder / 'log.db'
+        self.assertTrue(db.exists())
 
 
 class TestClearOldLogs(ABCTestLogger):
@@ -149,6 +232,64 @@ class TestClearOldLogs(ABCTestLogger):
                 self.assertFalse(filename.exists(), f'{filename} exists')
 
 
+class TestMeasureTime(unittest.TestCase):
+    """Test the measure_time function"""
+
+    @classmethod
+    def setUpClass(cls):
+        """Set the test context"""
+
+        cls.log_folder = Path('logs/').absolute()
+        if cls.log_folder.exists():
+            shutil.rmtree(cls.log_folder)
+
+        cls.log_folder.mkdir(exist_ok=True)
+
+    def test_good_function(self):
+        """Test a good function"""
+
+        t = 5
+        logger = create_logger(log_path=self.log_folder, name='good_logger')
+
+        @measure_time(logger=logger)
+        def _mock_good_func(t: int = 5):
+            time.sleep(t)
+            return 1
+
+        _mock_good_func(t=t)
+
+        with open(self.log_folder / 'info.log', 'r') as f:
+            content = f.read()
+
+        self.assertIn('_mock_good_func', content)
+        self.assertIn(f'{t}.0', content)
+
+    def test_bad_function(self):
+        """Test a good function"""
+
+        t = 5
+        logger = create_logger(log_path=self.log_folder, name='bad_logger')
+
+        @measure_time(logger=logger)
+        def _mock_bad_func(t: int = 5):
+            return 1 / 0
+
+        with self.assertRaises(ZeroDivisionError):
+            _mock_bad_func(t=t)
+
+        with open(self.log_folder / 'errors.log', 'r') as f:
+            content = f.read()
+
+        self.assertIn('_mock_bad_func', content)
+
+    @classmethod
+    def tearDownClass(cls):
+        """Clean the test context"""
+
+        if cls.log_folder.exists():
+            shutil.rmtree(cls.log_folder)
+
+
 def build_suite():
     """Build the TestSuite"""
     suite = unittest.TestSuite()
@@ -162,8 +303,14 @@ def build_suite():
 
     suite.addTest(TestCreateLogger('test_create_simple_logger'))
     suite.addTest(TestCreateLogger('test_create_named_logger'))
+    suite.addTest(TestCreateLogger('test_create_with_none_yaml'))
+    suite.addTest(TestCreateLogger('test_create_with_custom_yaml'))
+    suite.addTest(TestCreateLogger('test_create_db'))
 
     suite.addTest(TestClearOldLogs('test_call'))
+
+    suite.addTest(TestMeasureTime('test_good_function'))
+    suite.addTest(TestMeasureTime('test_bad_function'))
 
     return suite
 

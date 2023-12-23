@@ -23,6 +23,10 @@ exclude_lines =
     # Don't complain about abstract methods, they aren't run:
     @(abc\.)?abstractmethod
 
+omit =
+    test_quirtylog/*
+    suite.py
+
 ignore_errors = True
 
 [html]

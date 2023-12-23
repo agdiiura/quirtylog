@@ -182,7 +182,11 @@ def create_logger(log_path: str | Path | None = None,
             # by default, we consider only the last two stack
             calling_frame_name = '.'.join(calling_frame_name.split('/')[-2:])
 
-            calling_function_name = inspect.getmodule(calling_frame[0]).__name__
+            module = inspect.getmodule(calling_frame[0])
+            if module is not None:
+                calling_function_name = module.__name__
+            else:
+                calling_function_name = '__main__'
 
             if calling_frame_name != calling_function_name:
                 name = f'{calling_frame_name}.{calling_function_name}'

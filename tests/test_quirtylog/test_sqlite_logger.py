@@ -80,7 +80,11 @@ class TestSQLiteHandler(unittest.TestCase):
 
         # test
         message = 'My awesome error'
-        logging.error(message)
+
+        try:
+            raise RuntimeError()
+        except Exception:
+            logging.error(message, exc_info=True)
 
         self.assertTrue(self.db.exists())
 

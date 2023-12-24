@@ -116,8 +116,19 @@ class TestCreateLogger(ABCTestLogger):
 
     def test_create_simple_logger(self):
         """Test the function with default options"""
+        with self.assertRaises(TypeError):
+            create_logger(log_path=self.log_folder, remove_old_log=False, name=1)
 
         lgr = create_logger(log_path=self.log_folder, remove_old_log=False)
+
+        self.assertIsInstance(lgr, Logger)
+
+        self._assert_logs(logger=lgr, expected_name='test_core')
+
+    def test_create_logger_none_path(self):
+        """Test the function with default options"""
+
+        lgr = create_logger(log_path=None, remove_old_log=False)
 
         self.assertIsInstance(lgr, Logger)
 
@@ -223,13 +234,16 @@ class TestClearOldLogs(ABCTestLogger):
                 filename = self.log_folder / f'{name}.log.{k}'
                 filename.touch()
 
-        clear_old_logs(self.log_folder, k_min=k_min)
+        clear_old_logs(self.log_folder, k_min=str(k_min))
 
         for name in names:
             for k in range(k_min + 1, k_max):
                 filename = self.log_folder / f'{name}.log.{k}'
 
                 self.assertFalse(filename.exists(), f'{filename} exists')
+
+        clear_old_logs(log_path=None, k_min=k_min)
+        clear_old_logs(log_path='not_existing_path', k_min=k_min)
 
 
 class TestMeasureTime(unittest.TestCase):
@@ -302,6 +316,7 @@ def build_suite():
     suite.addTest(TestCheckPath('test_float'))
 
     suite.addTest(TestCreateLogger('test_create_simple_logger'))
+    suite.addTest(TestCreateLogger('test_create_logger_none_path'))
     suite.addTest(TestCreateLogger('test_create_named_logger'))
     suite.addTest(TestCreateLogger('test_create_with_none_yaml'))
     suite.addTest(TestCreateLogger('test_create_with_custom_yaml'))

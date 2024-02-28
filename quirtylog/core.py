@@ -52,11 +52,13 @@ def retrieve_name(var) -> str:
     :return: The name of the variable as a string.
 
     .. note::
+
         This function relies on inspecting the local variables of the calling frame,
         and it may not work correctly in all scenarios (e.g., if the variable is not in the local scope).
         Use with caution and consider the context of its usage.
 
     Example:
+
     .. code-block:: python
 
         x = 42
@@ -83,11 +85,13 @@ def path_constructor(loader, node, log_path: str | Path = "logs") -> str:
     :return: A valid path obtained by expanding environment variables and replacing the matched value.
 
     .. note::
+
         - This function is intended for use with the PyYAML library to customize the loading of YAML files.
         - The `log_path` parameter is used as the base path for constructing the full path.
         - The function utilizes a regular expression match to identify and replace the matched value.
 
     Example:
+
     .. code-block:: python
 
         yaml.add_constructor(
@@ -118,6 +122,7 @@ def check_path(var: str | Path, name: str = "value") -> Path:
     :raise TypeError: If the input is not a string or a Path object.
 
     Example:
+
     .. code-block:: python
 
         file_path = check_path('/path/to/file.txt', name='file_path')
@@ -142,7 +147,12 @@ def configure_logger(log_path: str | Path | None = None, config_file: str | Path
 
 
     Example:
+
     .. code-block:: python
+
+        import logging
+
+        my_logger = logging.getLogger(name='my-logger')
 
         configure_logger(
             log_path='/path/to/logs',
@@ -210,6 +220,7 @@ def create_logger(
     :raise TypeError: If `name` is not a string.
 
     Example:
+
     .. code-block:: python
 
         path = '/path/to/logs'
@@ -288,11 +299,13 @@ def measure_time(logger: logging.Logger, level: str = "info"):
             # Function implementation
 
     .. note::
+
         - The decorator logs the total execution time of the wrapped function and any exceptions that occur.
         - Exceptions are logged with their class name, error message, and stack trace.
         - The decorator re-raises the exception after logging.
 
     Example:
+
     .. code-block:: python
 
         @measure_time(logger=my_logger, level='error')
@@ -342,12 +355,14 @@ def clear_old_logs(log_path: str | Path | None = None, k_min: str | int = 1):
         If `k_min` is a string, it will be converted to an integer.
 
     .. note::
+
         - The function utilizes the `check_path` function to validate and convert the `log_path` parameter.
         - Log files with filenames in the format "<name>.log.<digit>" are considered for deletion.
         - The parameter `k_min` determines the minimum number of log files to retain; older files are deleted.
         - If the log folder does not exist, no files are removed.
 
     Example:
+
     .. code-block:: python
 
         # Remove log files in the '/path/to/logs' folder, keeping at least 2 files in the history

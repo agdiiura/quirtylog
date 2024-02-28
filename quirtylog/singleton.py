@@ -6,7 +6,7 @@ singleton.py
 A package for singleton creation
 """
 
-__all__ = ['singleton']
+__all__ = ["singleton"]
 
 
 class _SingletonWrapper(object):
@@ -30,6 +30,7 @@ class _SingletonWrapper(object):
 def singleton(cls):
     """
     Create a singleton object.
+
     Returns a wrapper objects. A call on that object
     returns a single instance object of decorated class. Use the __wrapped__
     attribute to access decorated class directly in unit tests
@@ -37,5 +38,5 @@ def singleton(cls):
     return _SingletonWrapper(cls)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

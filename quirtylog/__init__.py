@@ -6,6 +6,7 @@ quirtylog
 The quick & dirty logging package
 
 Example:
+
     .. code-block:: python
 
     import quirtylog
@@ -29,7 +30,7 @@ def _read_version():
 
     except Exception:
         # For development
-        file = Path(__file__).absolute().parents[1] / "pyptoject.toml"
+        file = Path(__file__).absolute().parents[1] / "pyproject.toml"
 
         if file.exists():
             with open(file, "r") as f:

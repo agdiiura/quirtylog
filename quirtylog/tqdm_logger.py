@@ -24,7 +24,7 @@ class TqdmToLogger(io.StringIO):
     logger = None
     #: The logging level to be used when emitting log messages.
     level = None
-    buf = ''
+    buf = ""
 
     def __init__(self, logger: logging.Logger, level=logging.INFO):
         """
@@ -37,6 +37,7 @@ class TqdmToLogger(io.StringIO):
         The logger is used to direct TQDM output, and the logging level determines the severity of log messages.
 
         Example:
+
         .. code-block:: python
 
             # Example usage of __init__ method in the TqdmToLogger class
@@ -60,7 +61,7 @@ class TqdmToLogger(io.StringIO):
 
         :param buf: The buffer content to be written.
         """
-        self.buf = buf.strip('\r\n\t ')
+        self.buf = buf.strip("\r\n\t ")
 
     def flush(self):
         """Execute the flush operation, logging the buffered content."""
@@ -68,22 +69,20 @@ class TqdmToLogger(io.StringIO):
         self.logger.log(self.level, self.buf)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from math import sqrt
 
     from tqdm import tqdm
     from joblib import Parallel, delayed
 
-    logging.basicConfig(format='%(asctime)s [%(levelname)-8s] %(message)s')
+    logging.basicConfig(format="%(asctime)s [%(levelname)-8s] %(message)s")
     lgr = logging.getLogger()
     lgr.setLevel(logging.DEBUG)
 
     tqdm_out = TqdmToLogger(lgr, level=logging.INFO)
     for x in tqdm(range(10), file=tqdm_out):
-        time.sleep(.1)
+        time.sleep(0.1)
 
-    x = Parallel(n_jobs=2)(
-        delayed(sqrt)(i ** 2) for i in tqdm(range(10), file=tqdm_out)
-    )
+    x = Parallel(n_jobs=2)(delayed(sqrt)(i**2) for i in tqdm(range(10), file=tqdm_out))
 
-    lgr.info(f'x: {x}')
+    lgr.info(f"x: {x}")

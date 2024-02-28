@@ -27,19 +27,17 @@ import coloredlogs
 
 from .sqlite_logger import SQLiteHandler
 
-__all__ = [
-    'create_logger', 'measure_time', 'clear_old_logs'
-]
+__all__ = ["configure_logger", "create_logger", "measure_time", "clear_old_logs"]
 
-path_matcher = re.compile(r'\$\{([^}^{]+)\}')
+path_matcher = re.compile(r"\$\{([^}^{]+)\}")
 
 
 def _serve_default_log_path() -> Path:
-    return Path().absolute() / 'logs'
+    return Path().absolute() / "logs"
 
 
 def _serve_default_config_path() -> Path:
-    return Path(__file__).absolute().parent / 'logging.yaml'
+    return Path(__file__).absolute().parent / "logging.yaml"
 
 
 def retrieve_name(var) -> str:
@@ -64,13 +62,14 @@ def retrieve_name(var) -> str:
         x = 42
         variable_name = retrieve_name(x)
         print(variable_name)  # Output: 'x'
+
     """
 
     callers_local_vars = inspect.currentframe().f_back.f_locals.items()
     return [var_name for var_name, var_val in callers_local_vars if var_val is var][0]
 
 
-def path_constructor(loader, node, log_path: str | Path = 'logs') -> str:
+def path_constructor(loader, node, log_path: str | Path = "logs") -> str:
     """
     YAML constructor function for expanding and replacing paths.
 
@@ -100,10 +99,10 @@ def path_constructor(loader, node, log_path: str | Path = 'logs') -> str:
     """
     value = node.value
     match = path_matcher.match(value)
-    return str(log_path) + value[match.end():]
+    return str(log_path) + value[match.end() :]
 
 
-def check_path(var: str | Path, name: str = 'value') -> Path:
+def check_path(var: str | Path, name: str = "value") -> Path:
     """
     Validate and convert the input value to a Path object.
 
@@ -128,16 +127,71 @@ def check_path(var: str | Path, name: str = 'value') -> Path:
     if isinstance(var, str):
         var = Path(var)
     elif not isinstance(var, Path):
-        raise TypeError(f'`{name}` is Path object')
+        raise TypeError(f"`{name}` is Path object")
     return var
 
 
-def create_logger(log_path: str | Path | None = None,
-                  config_file: str | Path | None = 'default',
-                  name: str | None = None,
-                  db: str | Path | None = None,
-                  remove_old_log: bool = True,
-                  k_min: int | str = 1) -> logging.Logger:
+def configure_logger(log_path: str | Path | None = None, config_file: str | Path | None = "default"):
+    """
+    Configure an existing log
+
+    :param log_path: The folder path for storing log files. Defaults to `logs/`.
+    :param config_file: The configuration file path. Defaults to `default`.
+        If `config_file` is provided, the logger is configured using the YAML configuration file;
+        otherwise, a basic configuration is applied.
+
+
+    Example:
+    .. code-block:: python
+
+        configure_logger(
+            log_path='/path/to/logs',
+            config_file='/path/to/config.yaml'
+        )
+
+    """
+
+    if log_path is None:
+        log_path = _serve_default_log_path()
+    log_path = check_path(var=log_path, name=retrieve_name(log_path))
+    log_path.mkdir(parents=True, exist_ok=True)
+
+    if config_file is not None:
+        if config_file == "default":
+            config_file = _serve_default_config_path()
+
+        config_file = check_path(var=config_file, name=retrieve_name(config_file))
+
+        yaml.add_implicit_resolver("!path", path_matcher)
+        yaml.add_constructor("!path", lambda loader, node: path_constructor(loader, node, log_path=log_path))
+        with open(config_file, "r") as file:
+            # add the new path loader
+            config = yaml.load(file, Loader=yaml.FullLoader)
+            logging.config.dictConfig(config)
+    else:
+        base_config = dict(
+            version=1,
+            disable_existing_loggers=False,
+            loggers={
+                "": {"level": "INFO"},
+                "another.module": {
+                    "level": "DEBUG",
+                },
+            },
+        )
+        logging.config.dictConfig(base_config)
+
+    coloredlogs.install()
+
+
+def create_logger(
+    log_path: str | Path | None = None,
+    config_file: str | Path | None = "default",
+    name: str | None = None,
+    db: str | Path | None = None,
+    remove_old_log: bool = True,
+    k_min: int | str = 1,
+) -> logging.Logger:
     """
     Create a custom logger object with optional configuration parameters.
 
@@ -178,60 +232,29 @@ def create_logger(log_path: str | Path | None = None,
         stack = inspect.stack()
         if len(stack) > 1:
             calling_frame = stack[1]
-            calling_frame_name = calling_frame[1].replace('.py', '')
+            calling_frame_name = calling_frame[1].replace(".py", "")
             # by default, we consider only the last two stack
-            calling_frame_name = '.'.join(calling_frame_name.split('/')[-2:])
+            calling_frame_name = ".".join(calling_frame_name.split("/")[-2:])
 
             module = inspect.getmodule(calling_frame[0])
             if module is not None:
                 calling_function_name = module.__name__
             else:
-                calling_function_name = '__main__'
+                calling_function_name = "__main__"
 
             if calling_frame_name != calling_function_name:
-                name = f'{calling_frame_name}.{calling_function_name}'
+                name = f"{calling_frame_name}.{calling_function_name}"
             else:
                 name = calling_function_name
 
         else:
             # here in the main thread in REPL
-            name = '__main__'
+            name = "__main__"
 
     elif not isinstance(name, str):
-        raise TypeError('`name` is str')
+        raise TypeError("`name` is str")
 
-    log_path.mkdir(parents=True, exist_ok=True)
-
-    if config_file is not None:
-        if config_file == 'default':
-            config_file = _serve_default_config_path()
-
-        config_file = check_path(var=config_file, name=retrieve_name(config_file))
-
-        yaml.add_implicit_resolver('!path', path_matcher)
-        yaml.add_constructor(
-            '!path',
-            lambda loader, node: path_constructor(loader, node, log_path=log_path)
-        )
-        with open(config_file, 'r') as file:
-            # add the new path loader
-            config = yaml.load(file, Loader=yaml.FullLoader)
-            logging.config.dictConfig(config)
-    else:
-        base_config = dict(
-            version=1,
-            disable_existing_loggers=False,
-            loggers={
-                '': {
-                    'level': 'INFO',
-                },
-                'another.module': {
-                    'level': 'DEBUG',
-                },
-            })
-        logging.config.dictConfig(base_config)
-
-    coloredlogs.install()
+    configure_logger(config_file=config_file)
     # Here is needed to get the logging object
     logger = logging.getLogger(name=name)
 
@@ -244,7 +267,7 @@ def create_logger(log_path: str | Path | None = None,
     return logger
 
 
-def measure_time(logger: logging.Logger, level: str = 'info'):
+def measure_time(logger: logging.Logger, level: str = "info"):
     """
     Create a decorator for computing execution time and managing exceptions with a specified logger.
 
@@ -282,7 +305,6 @@ def measure_time(logger: logging.Logger, level: str = 'info'):
     lgr = getattr(logger, level)
 
     def decorator(func):
-
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             func_name = func.__name__
@@ -292,12 +314,12 @@ def measure_time(logger: logging.Logger, level: str = 'info'):
                 result = func(*args, **kwargs)
                 dt = time.time() - start
 
-                lgr(f'`{func_name}` executed. Total time {dt:.3f} [s]')
+                lgr(f"`{func_name}` executed. Total time {dt:.3f} [s]")
                 return result
 
             except Exception as e:
                 # log the exception
-                err = f'Error in `{func_name}`. {e.__class__.__name__}: {e}'
+                err = f"Error in `{func_name}`. {e.__class__.__name__}: {e}"
                 logger.error(err, exc_info=True)
 
                 # re-raise the exception
@@ -308,8 +330,7 @@ def measure_time(logger: logging.Logger, level: str = 'info'):
     return decorator
 
 
-def clear_old_logs(log_path: str | Path | None = None,
-                   k_min: str | int = 1):
+def clear_old_logs(log_path: str | Path | None = None, k_min: str | int = 1):
     """
     Delete old log files in the specified folder.
 
@@ -341,11 +362,10 @@ def clear_old_logs(log_path: str | Path | None = None,
         k_min = int(k_min)
 
     if log_path.exists():
-
         # TODO to be changed: notice the loggers section in yml file
         # select files with format <name>.log.<digit>
         for p in log_path.iterdir():
-            number = str(p).split('.')[-1]
+            number = str(p).split(".")[-1]
             if number.isdigit() and p.is_file():
                 if int(number) > k_min:
                     # then remove files
@@ -355,5 +375,5 @@ def clear_old_logs(log_path: str | Path | None = None,
                         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

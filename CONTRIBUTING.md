@@ -12,12 +12,11 @@ code quality, see [`tests`](tests) folder.
 ### Code style
 
 The style and the quality of the code is managed
-by [`flake8`](https://flake8.pycqa.org/en/latest/). See [`build-requirements.txt`](build-requirements.txt) for dependencies
-and [`setup.cfg`](setup.cfg) for configuration.
+by [`ruff`](https://docs.astral.sh/ruff/). See  [`pyproject.toml`](pyproject.toml) for configuration.
 A plugin for a documentation is also used, the `rst` paradigm for [`Sphinx`](https://www.sphinx-doc.org/en/master/index.html)
 has been chosen. See [`docs`](docs) folder for documentation-related issues.
-The import rules are managed through [`isort`](https://pycqa.github.io/isort/), see [`setup.cfg`](setup.cfg) file, section
-`[isort]`.
+The import rules are managed through [`isort`](https://pycqa.github.io/isort/), see [`pyproject.toml`](pyproject.toml) file, section
+`[tool.isort]`.
 
 The style syntax rules are imposed with the help of [`pre-commit`](https://pre-commit.com/) tool.
 Those are specified in the [`.pre-commit-config.yaml`](.pre-commit-config.yaml) file.

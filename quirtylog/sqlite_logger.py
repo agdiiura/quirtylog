@@ -27,7 +27,7 @@ class SQLiteHandler(logging.Handler):
         """Return the name of the table in the SQLite database"""
         return self._log_table
 
-    _log_table = 'log'
+    _log_table = "log"
 
     _initial_sql = f"""CREATE TABLE IF NOT EXISTS {_log_table}(
                         TimeStamp TEXT,
@@ -77,7 +77,7 @@ class SQLiteHandler(logging.Handler):
                    );
                    """
 
-    def __init__(self, db: Path | str = 'log.db'):
+    def __init__(self, db: Path | str = "log.db"):
         """
         Initialize the SQLiteHandler instance.
 
@@ -89,6 +89,7 @@ class SQLiteHandler(logging.Handler):
         by the `db` parameter. It also executes the initial SQL statement to create the log table if it does not exist.
 
         Example:
+
         .. code-block:: python
 
             # Initialize SQLiteHandler with the default database path
@@ -104,7 +105,7 @@ class SQLiteHandler(logging.Handler):
         if isinstance(db, str):
             db = Path(db)
         elif not isinstance(db, Path):
-            raise TypeError('`db` is a Path object')
+            raise TypeError("`db` is a Path object")
 
         self._db = db
         conn = sqlite3.connect(self._db)
@@ -122,7 +123,8 @@ class SQLiteHandler(logging.Handler):
         based on the `created` attribute of the log record, representing the time of log record creation.
 
         Example:
-            .. code-block:: python
+
+        .. code-block:: python
 
             # Example usage of format_time in the SQLiteHandler class
             log_record = logging.LogRecord('name', logging.ERROR, 'pathname', 1, 'Log message', (), None)
@@ -131,7 +133,7 @@ class SQLiteHandler(logging.Handler):
 
         """
 
-        record.dbtime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(record.created))
+        record.dbtime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(record.created))
 
     def emit(self, record: LogRecord):
         """
@@ -150,6 +152,7 @@ class SQLiteHandler(logging.Handler):
               be efficient in high-throughput scenarios.
 
         Example:
+
         .. code-block:: python
 
             # Example usage of emit in the SQLiteHandler class
@@ -164,7 +167,7 @@ class SQLiteHandler(logging.Handler):
         if record.exc_info:  # for exceptions
             record.exc_text = logging._defaultFormatter.formatException(record.exc_info)
         else:
-            record.exc_text = ''
+            record.exc_text = ""
 
         # Insert the log record
         sql = self._insertion_sql % record.__dict__
@@ -173,18 +176,18 @@ class SQLiteHandler(logging.Handler):
         conn.commit()  # not efficient, but hopefully thread-safe
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     """A test script"""
 
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
 
     # sqlite handler
-    sh = SQLiteHandler(db='test.db')
+    sh = SQLiteHandler(db="test.db")
     sh.setLevel(logging.INFO)
     logging.getLogger().addHandler(sh)
 
     # test
-    logging.info('Start')
+    logging.info("Start")
     time.sleep(5)
-    logging.info('End')
+    logging.info("End")

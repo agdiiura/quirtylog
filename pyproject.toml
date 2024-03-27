@@ -27,7 +27,7 @@ dependencies = [
 
 [project.optional-dependencies]
 build = [
-    "ruff>=0.2.0",
+    "ruff>=0.3.0",
     "colorama>=0.4.6",
     "coverage>=7.0",
     "isort>=5.12.0",

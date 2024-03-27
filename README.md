@@ -8,9 +8,6 @@
 Quick & dirty logging in python.
 
 
-The file `requirements.txt` contains the packages needed for the installation.
-The code requires `python3.11+`.
-
 ### Installation
 To install the package the simplest procedure is:
 ```bash
@@ -30,6 +27,9 @@ Once you have cloned the repository
 pip install .
 ```
 To use the develop mode just write `pip install -e .`.
+
+The file `pyproject.toml` contains the packages needed for the installation.
+The code requires `python3.11+`.
 
 
 ### Examples

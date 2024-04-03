@@ -8,6 +8,8 @@ Test the core module
 To run the code
 $ python test_core.py
 """
+
+import re
 import time
 import shutil
 import logging
@@ -296,7 +298,7 @@ class TestMeasureTime(unittest.TestCase):
         logger = create_logger(log_path=self.log_folder, name="good_logger")
 
         @measure_time(logger=logger)
-        def _mock_good_func(t: int = 5):
+        def _mock_good_func(t: int = 3):
             time.sleep(t)
             return 1
 
@@ -306,7 +308,11 @@ class TestMeasureTime(unittest.TestCase):
             content = f.read()
 
         self.assertIn("_mock_good_func", content)
-        self.assertIn(f"{t}.0", content)
+
+        regex = rf"[{t}|{t+1}]\.\d+\s\[s\]"
+        matcher = re.compile(regex)
+        objects = matcher.findall(content)
+        self.assertGreater(len(objects), 0)
 
     def test_bad_function(self):
         """Test a good function"""

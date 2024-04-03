@@ -1,7 +1,5 @@
 # Include the README
 include *.md
-include *requirements.txt
 include quirtylog/*.yaml
-include *.ini
-include setup.cfg
+include pyproject.toml
 include *.rst

@@ -59,7 +59,12 @@ def g(x):
     """A function that raise an exception"""
     return x / 0.
 ```
+It can also be used as a wrapper for
+external scripts
 
+```bash
+python -m quirtylog main.py
+```
 For further examples see the folder [`examples`](examples).
 
 ### Contributing

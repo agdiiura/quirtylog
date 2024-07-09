@@ -13,6 +13,7 @@ This module contains utility functions for logging and file management.
     Ensure to review the individual docstrings for each function for detailed information and usage examples.
 
 """
+
 import re
 import time
 import inspect
@@ -136,7 +137,9 @@ def check_path(var: str | Path, name: str = "value") -> Path:
     return var
 
 
-def configure_logger(log_path: str | Path | None = None, config_file: str | Path | None = "default"):
+def configure_logger(
+    log_path: str | Path | None = None, config_file: str | Path | None = "default"
+):
     """
     Configure an existing log
 
@@ -166,6 +169,7 @@ def configure_logger(log_path: str | Path | None = None, config_file: str | Path
     log_path = check_path(var=log_path, name=retrieve_name(log_path))
     log_path.mkdir(parents=True, exist_ok=True)
 
+    coloredlogs.install()
     if config_file is not None:
         if config_file == "default":
             config_file = _serve_default_config_path()
@@ -173,7 +177,10 @@ def configure_logger(log_path: str | Path | None = None, config_file: str | Path
         config_file = check_path(var=config_file, name=retrieve_name(config_file))
 
         yaml.add_implicit_resolver("!path", path_matcher)
-        yaml.add_constructor("!path", lambda loader, node: path_constructor(loader, node, log_path=log_path))
+        yaml.add_constructor(
+            "!path",
+            lambda loader, node: path_constructor(loader, node, log_path=log_path),
+        )
         with open(config_file, "r") as file:
             # add the new path loader
             config = yaml.load(file, Loader=yaml.FullLoader)
@@ -191,7 +198,7 @@ def configure_logger(log_path: str | Path | None = None, config_file: str | Path
         )
         logging.config.dictConfig(base_config)
 
-    coloredlogs.install()
+    #
 
 
 def create_logger(
@@ -265,7 +272,7 @@ def create_logger(
     elif not isinstance(name, str):
         raise TypeError("`name` is str")
 
-    configure_logger(config_file=config_file)
+    configure_logger(log_path=log_path, config_file=config_file)
     # Here is needed to get the logging object
     logger = logging.getLogger(name=name)
 

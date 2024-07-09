@@ -2,10 +2,12 @@ version: 1
 disable_existing_loggers: False
 formatters:
   simple:
-    format: "%(levelname)s - %(asctime)s - <PID %(process)d:%(processName)s>: [%(name)s.%(funcName)s] %(message)s"
+    '()': 'coloredlogs.ColoredFormatter'
+    format: "%(levelname)s: %(asctime)s - <PID %(process)d:%(processName)s>: [%(name)s.%(funcName)s] %(message)s"
+    datefmt: '%Y-%m-%d %H:%M:%S'
   error:
-    format: "%(levelname)s - %(asctime)s - <PID %(process)d:%(processName)s>: [%(name)s.%(funcName)s] %(message)s"
-
+    format: "%(levelname)s: %(asctime)s - <PID %(process)d:%(processName)s>: [%(name)s.%(funcName)s] %(message)s"
+    datefmt: '%Y-%m-%d %H:%M:%S'
 file_handler_anchor: &file_handler_anchor
   class: logging.handlers.RotatingFileHandler
   maxBytes: 5242880 # 5MB
@@ -43,12 +45,12 @@ loggers:
   <module>:
     level: INFO
     handlers: [console, info_file_handler, error_file_handler, warn_file_handler]
-    propogate: no
+    propagate: no
 
   <module.x>:
     level: DEBUG
     handlers: [info_file_handler, error_file_handler, debug_file_handler, warn_file_handler]
-    propogate: yes
+    propagate: yes
 
 root:
   level: DEBUG

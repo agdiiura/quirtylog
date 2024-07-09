@@ -10,7 +10,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quirtylog"
-version = "0.3.0"
+version = "0.4.0"
 readme = "README.md"
 authors = [
     {name = "agdiiura", email="andreadiiura@gmail.com"}
@@ -27,7 +27,7 @@ dependencies = [
 
 [project.optional-dependencies]
 build = [
-    "ruff>=0.3.0",
+    "ruff>=0.5.0",
     "colorama>=0.4.6",
     "coverage>=7.0",
     "isort>=5.12.0",

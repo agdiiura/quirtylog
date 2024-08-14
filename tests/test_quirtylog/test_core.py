@@ -97,7 +97,12 @@ class ABCAssertLogs(ABCTestLogger):
 
     def _assert_logs(self, logger: Logger, expected_name: str, cases: list | None = None):
         if cases is None:
-            cases = [("info", "info"), ("debug", "debug"), ("warning", "warn"), ("error", "errors")]
+            cases = [
+                ("info", "info"),
+                ("debug", "debug"),
+                ("warning", "warn"),
+                ("error", "errors"),
+            ]
 
         message = str(uuid4())
         for method, name in cases:
@@ -179,7 +184,9 @@ class TestCreateLogger(ABCAssertLogs):
     def test_create_with_none_yaml(self):
         """Test the function with config None"""
 
-        lgr = create_logger(log_path=self.log_folder, name="config_none", config_file=None)
+        lgr = create_logger(
+            log_path=self.log_folder, name="config_none", config_file=None
+        )
 
         self.assertIsInstance(lgr, Logger)
         lgr.info("What")
@@ -222,7 +229,9 @@ class TestCreateLogger(ABCAssertLogs):
         with open(config_file, "w") as f:
             f.write(config_content)
 
-        lgr = create_logger(log_path=self.log_folder, config_file=config_file, name="using_config")
+        lgr = create_logger(
+            log_path=self.log_folder, config_file=config_file, name="using_config"
+        )
         txt = "my_awesome_message"
         lgr.info(txt)
 
@@ -249,6 +258,25 @@ class TestCreateLogger(ABCAssertLogs):
 
         db = self.log_folder / "log.db"
         self.assertTrue(db.exists())
+
+    def test_from_main(self):
+        """Test the function with db option"""
+
+        code = f"""
+        import quirtylog
+        lgr = quirtylog.create_logger(log_path="{self.log_folder}")
+        lgr.info("hello")
+        """
+
+        code = "\n".join([line.strip() for line in code.split("\n")])
+        scope = {}
+        exec(code, scope)
+
+        log_filename = self.log_folder / "info.log"
+        with open(log_filename, "r") as f:
+            content = f.read()
+
+        self.assertIn(".__main__.", content)
 
 
 class TestClearOldLogs(ABCTestLogger):
@@ -360,6 +388,7 @@ def build_suite():
     suite.addTest(TestCreateLogger("test_create_with_none_yaml"))
     suite.addTest(TestCreateLogger("test_create_with_custom_yaml"))
     suite.addTest(TestCreateLogger("test_create_db"))
+    suite.addTest(TestCreateLogger("test_from_main"))
 
     suite.addTest(TestClearOldLogs("test_call"))
 

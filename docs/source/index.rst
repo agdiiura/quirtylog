@@ -44,6 +44,5 @@ quirtylog
    :toctree: quirtylog/
 
    quirtylog.core
-   quirtylog.singleton
    quirtylog.sqlite_logger
    quirtylog.tqdm_logger

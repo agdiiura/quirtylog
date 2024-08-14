@@ -19,7 +19,6 @@ from pathlib import Path
 from importlib.metadata import version
 
 from .core import *
-from .singleton import *
 
 
 def _read_version():

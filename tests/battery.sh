@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 
 FOLDER=test_quirtylog
-COMMAND="python suite.py --test"
 
-echo ">>>>>>>>>>>>"
-echo ">>> quirtylog"
-echo ">>>>>>>>>>>>"
+echo "##########################################"
+echo "### Execute test for quirtylog package ###"
+echo "##########################################"
 
-$COMMAND $FOLDER/test_base.py
-$COMMAND $FOLDER/test_core.py
-$COMMAND $FOLDER/test_sqlite_logger.py
-$COMMAND $FOLDER/test_tqdm_logger.py
+coverage run suite.py --test $FOLDER
+coverage report -m
 
 echo "Done!"

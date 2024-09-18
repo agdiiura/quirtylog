@@ -10,7 +10,13 @@ on:
     branches: [ "master" ]
 
 permissions:
-  contents: read
+  # Gives the action the necessary permissions for publishing new
+  # comments in pull requests.
+  pull-requests: write
+  # Gives the action the necessary permissions for pushing data to the
+  # python-coverage-comment-action branch, and for editing existing
+  # comments (to avoid publishing multiple comments in the same PR)
+  contents: write
 
 jobs:
   build:
@@ -24,22 +30,42 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
+
     - name: Install dependencies and source code
       run: |
         python -m pip install --upgrade pip
         pip install -e .[build,docs]
+
     - name: Lint with ruff
       run: |
         # stop the build if there are Python syntax errors or undefined names
         mkdir -p tests/test-reports
         ruff check quirtylog
+
     - name: Test library
       run: |
         cd tests
         bash battery.sh
+
+    - name: Coverage comment
+      id: coverage_comment
+      uses: py-cov-action/python-coverage-comment-action@v3
+      with:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Store Pull Request comment to be posted
+      uses: actions/upload-artifact@v4
+      if: steps.coverage_comment.outputs.COMMENT_FILE_WRITTEN == 'true'
+      with:
+        # If you use a different name, update COMMENT_ARTIFACT_NAME accordingly
+        name: python-coverage-comment-action
+        # If you use a different name, update COMMENT_FILENAME accordingly
+        path: python-coverage-comment-action.txt

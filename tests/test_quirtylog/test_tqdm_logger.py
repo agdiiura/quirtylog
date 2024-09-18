@@ -54,8 +54,8 @@ class TestTqdmToLogger(unittest.TestCase):
     def test_tqdm(self):
         """Test the tqdm logger"""
 
-        for i in tqdm.tqdm(range(self.n_rows), file=self.tqdm_out):
-            _slow_parallel_function(i)
+        for _ in tqdm.tqdm(range(self.n_rows), file=self.tqdm_out):
+            time.sleep(0.1)
 
         self.assertTrue(self.log_filename.exists())
         num_lines = sum(1 for _ in open(self.log_filename))

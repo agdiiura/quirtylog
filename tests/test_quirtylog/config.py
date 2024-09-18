@@ -13,7 +13,7 @@ __all__ = ["xml_test_folder"]
 config_path = Path(__file__).absolute().parent
 
 
-def get_xml_test_folder(verbose: bool = True) -> str:
+def get_xml_test_folder(verbose: bool = False) -> str:
     """Serve a test-reports folder based on the current system environment"""
     path = config_path.parent / "test-reports"
     path.mkdir(exist_ok=True)

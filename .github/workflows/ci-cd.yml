@@ -55,9 +55,13 @@ jobs:
         cd tests
         bash battery.sh
         ls -la
+        echo ""
+        echo "---> ${PY_VERSION}"
+        echo ""
         mv .coverage .coverage${{ matrix.python_version }}
         ls -la
       env:
+          PY_VERSION: ${{ matrix.python_version }}
           COVERAGE_FILE: ".coverage${{ matrix.python_version }}"
           # Alternatively you can run coverage with the --parallel flag or add
           # `parallel = True` in the coverage config file.

@@ -54,9 +54,12 @@ jobs:
       run: |
         cd tests
         bash battery.sh
+        echo ""
+        echo ${{ matrix.python_version }}
+        echo ""
         ls -la
       env:
-          COVERAGE_FILE: ".coverage.${{ matrix.python_version }}"
+          COVERAGE_FILE: ".coverage${{ matrix.python_version }}"
           # Alternatively you can run coverage with the --parallel flag or add
           # `parallel = True` in the coverage config file.
           # If using pytest-cov, you can also add the `--cov-append` flag
@@ -66,7 +69,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: coverage-${{ matrix.python_version }}
-        path: .coverage.${{ matrix.python_version }}
+        path: .coverage${{ matrix.python_version }}
         # By default, hidden files/folders (i.e. starting with .) are ignored.
         # You may prefer (for security reason) not setting this and instead
         # set COVERAGE_FILE above to not start with a `.`

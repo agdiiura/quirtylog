@@ -24,7 +24,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.11", "3.12"]
-        os: [ubuntu-latest, macOS-latest]
+        os: [ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
 

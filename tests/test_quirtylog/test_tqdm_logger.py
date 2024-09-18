@@ -59,6 +59,7 @@ class TestTqdmToLogger(unittest.TestCase):
         for i in tqdm.tqdm(range(self.n_rows), file=self.tqdm_out):
             _slow_parallel_function(i)
 
+        self.assertTrue(self.logname.exists())
         num_lines = sum(1 for _ in open(self.logname))
         self.assertEqual(num_lines, self.n_rows + 2)  # here we count 0 and 100
 
@@ -70,6 +71,7 @@ class TestTqdmToLogger(unittest.TestCase):
             for i in tqdm.tqdm(range(self.n_rows), file=self.tqdm_out)
         )
 
+        self.assertTrue(self.logname.exists())
         num_lines = sum(1 for _ in open(self.logname))
         self.assertGreater(num_lines, self.n_rows + 2)  # here we count 0 and 100
         self.assertLessEqual(num_lines, 2 * (self.n_rows + 2))  # here we count 0 and 100

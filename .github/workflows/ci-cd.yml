@@ -55,7 +55,7 @@ jobs:
         cd tests
         bash battery.sh
         echo ""
-        echo ${{ matrix.python_version }}
+        echo "${{ matrix.python_version }}"
         echo ""
         ls -la
       env:

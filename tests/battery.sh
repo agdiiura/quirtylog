@@ -7,7 +7,7 @@ echo "##########################################"
 echo "### Execute test for quirtylog package ###"
 echo "##########################################"
 
-coverage run suite.py --test $FOLDER
+coverage run -m unittest suite.py --test $FOLDER
 coverage report -m
 
 echo ""

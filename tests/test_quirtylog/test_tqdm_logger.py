@@ -10,6 +10,7 @@ $ python test_tqdm_logger.py
 """
 
 import time
+import shutil
 import logging
 import unittest
 
@@ -21,6 +22,7 @@ import xmlrunner
 from joblib import Parallel, delayed
 from test_quirtylog.config import xml_test_folder
 
+from quirtylog import create_logger
 from quirtylog.tqdm_logger import TqdmToLogger
 
 
@@ -36,19 +38,15 @@ class TestTqdmToLogger(unittest.TestCase):
     def setUpClass(cls):
         """Configure the test"""
 
-        cls.logname = Path("log.info")
-        if cls.logname.exists():
-            cls.logname.unlink()
+        cls.log_folder = Path().absolute() / "logs"
+        if cls.log_folder.exists():
+            shutil.rmtree(cls.log_folder)
 
-        logging.basicConfig(
-            filename=cls.logname,
-            filemode="a",
-            format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
-            datefmt="%H:%M:%S",
-            level=logging.INFO,
-        )
+        cls.log_folder.mkdir(exist_ok=True)
+        cls.log_filename = cls.log_folder / "info.log"
 
-        cls.logger = logging.getLogger(cls.__name__)
+        cls.logger = create_logger(log_path=cls.log_folder, name="tqdm-logger")
+
         cls.tqdm_out = TqdmToLogger(cls.logger, level=logging.INFO)
 
         cls.n_rows = 10
@@ -59,8 +57,8 @@ class TestTqdmToLogger(unittest.TestCase):
         for i in tqdm.tqdm(range(self.n_rows), file=self.tqdm_out):
             _slow_parallel_function(i)
 
-        self.assertTrue(self.logname.exists())
-        num_lines = sum(1 for _ in open(self.logname))
+        self.assertTrue(self.log_filename.exists())
+        num_lines = sum(1 for _ in open(self.log_filename))
         self.assertEqual(num_lines, self.n_rows + 2)  # here we count 0 and 100
 
     def test_joblib_parallel(self):
@@ -71,16 +69,16 @@ class TestTqdmToLogger(unittest.TestCase):
             for i in tqdm.tqdm(range(self.n_rows), file=self.tqdm_out)
         )
 
-        self.assertTrue(self.logname.exists())
-        num_lines = sum(1 for _ in open(self.logname))
+        self.assertTrue(self.log_filename.exists())
+        num_lines = sum(1 for _ in open(self.log_filename))
         self.assertGreater(num_lines, self.n_rows + 2)  # here we count 0 and 100
         self.assertLessEqual(num_lines, 2 * (self.n_rows + 2))  # here we count 0 and 100
 
     @classmethod
     def tearDownClass(cls):
         """Execute the tear down procedure"""
-        if cls.logname.exists():
-            cls.logname.unlink()
+        if cls.log_folder.exists():
+            shutil.rmtree(cls.log_folder)
 
 
 def build_suite():

@@ -54,6 +54,9 @@ jobs:
       run: |
         cd tests
         bash battery.sh
+        ls -la
+        mv .coverage .coverage${{ matrix.python_version }}
+        ls -la
       env:
           COVERAGE_FILE: ".coverage${{ matrix.python_version }}"
           # Alternatively you can run coverage with the --parallel flag or add

@@ -39,6 +39,7 @@ class TestTqdmToLogger(unittest.TestCase):
         cls.logname = Path(__file__).absolute().parent / "log.info"
         if cls.logname.exists():
             cls.logname.unlink()
+
         logging.basicConfig(
             filename=cls.logname,
             filemode="a",
@@ -55,8 +56,8 @@ class TestTqdmToLogger(unittest.TestCase):
     def test_tqdm(self):
         """Test the tqdm logger"""
 
-        for _ in tqdm.tqdm(range(self.n_rows), file=self.tqdm_out):
-            time.sleep(0.1)
+        for i in tqdm.tqdm(range(self.n_rows), file=self.tqdm_out):
+            _slow_parallel_function(i)
 
         num_lines = sum(1 for _ in open(self.logname))
         self.assertEqual(num_lines, self.n_rows + 2)  # here we count 0 and 100
@@ -65,7 +66,8 @@ class TestTqdmToLogger(unittest.TestCase):
         """Test the tqdm logger inside a joblib execution"""
 
         _ = Parallel(n_jobs=2)(
-            delayed(_slow_parallel_function)(i**2) for i in tqdm.tqdm(range(self.n_rows), file=self.tqdm_out)
+            delayed(_slow_parallel_function)(i**2)
+            for i in tqdm.tqdm(range(self.n_rows), file=self.tqdm_out)
         )
 
         num_lines = sum(1 for _ in open(self.logname))

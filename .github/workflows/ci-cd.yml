@@ -65,7 +65,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: coverage-${{ matrix.python-version }}
-        path: .coverage${{ matrix.python-version }}
+        path: tests/.coverage${{ matrix.python-version }}
         # By default, hidden files/folders (i.e. starting with .) are ignored.
         # You may prefer (for security reason) not setting this and instead
         # set COVERAGE_FILE above to not start with a `.`

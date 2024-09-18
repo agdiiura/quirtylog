@@ -36,7 +36,7 @@ class TestTqdmToLogger(unittest.TestCase):
     def setUpClass(cls):
         """Configure the test"""
 
-        cls.logname = Path(__file__).absolute().parent / "log.info"
+        cls.logname = Path("log.info")
         if cls.logname.exists():
             cls.logname.unlink()
 
@@ -84,6 +84,7 @@ class TestTqdmToLogger(unittest.TestCase):
 def build_suite():
     """Build the TestSuite"""
     suite = unittest.TestSuite()
+
     suite.addTest(TestTqdmToLogger("test_tqdm"))
     suite.addTest(TestTqdmToLogger("test_joblib_parallel"))
 

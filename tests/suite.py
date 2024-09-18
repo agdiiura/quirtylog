@@ -22,6 +22,8 @@ Dependencies:
     Ensure that the required dependencies are installed before running this script.
 
 """
+
+import sys
 import argparse
 import unittest
 import warnings
@@ -35,7 +37,7 @@ import xmlrunner
 from colorama import Back, Style
 from test_quirtylog.config import xml_test_folder
 
-warnings.filterwarnings('ignore')
+warnings.filterwarnings("ignore")
 
 
 class ErrorUnittest(unittest.TestCase):
@@ -43,7 +45,7 @@ class ErrorUnittest(unittest.TestCase):
 
     def __init__(self, test_name: str, module: str, exception: Exception):
         """Override the default constructor"""
-        print('\n\n>>> ERROR!\n\n')
+        print("\n\n>>> ERROR!\n\n")
         super().__init__(test_name)
         self._module = module
         self._exception = exception
@@ -52,8 +54,8 @@ class ErrorUnittest(unittest.TestCase):
         """Raise an error"""
         self.assertTrue(
             False,
-            msg=f'Error in loading `{self._module}`. '
-                f'{self._exception.__class__.__name__}: {self._exception}'
+            msg=f"Error in loading `{self._module}`. "
+            f"{self._exception.__class__.__name__}: {self._exception}",
         )
 
 
@@ -61,7 +63,9 @@ def build_error_suite(module: Path, exception: Exception):
     """Build a TestSuite object"""
 
     suite = unittest.TestSuite()
-    suite.addTest(ErrorUnittest('test_raise_error', module=str(module), exception=exception))
+    suite.addTest(
+        ErrorUnittest("test_raise_error", module=str(module), exception=exception)
+    )
 
     return suite
 
@@ -69,10 +73,10 @@ def build_error_suite(module: Path, exception: Exception):
 def make_summary(test_results: dict):
     """Make a pretty summary for multiple test"""
 
-    print('\n\n')
+    print("\n\n")
     for t, r in test_results.items():
         if len(r.errors) > 0 or len(r.failures) > 0:
-            print(f'{Style.DIM + Back.LIGHTRED_EX}Error with `{t}`{Style.RESET_ALL}')
+            print(f"{Style.DIM + Back.LIGHTRED_EX}Error with `{t}`{Style.RESET_ALL}")
 
 
 def run_test(file: Path):
@@ -83,10 +87,16 @@ def run_test(file: Path):
     """
     runner = xmlrunner.XMLTestRunner(output=xml_test_folder)
 
-    print(f'\n{Style.DIM + Back.LIGHTBLUE_EX}{pd.Timestamp.now()}{Style.RESET_ALL}\nReading `{file}` module')
-    module = importlib.import_module(str(file).replace('/', '.').replace('.py', ''))
+    print(
+        f"\n{Style.DIM + Back.LIGHTBLUE_EX}{pd.Timestamp.now()}{Style.RESET_ALL}\nReading `{file}` module"
+    )
+    if sys.platform != "win32":
+        target = str(file).replace("\\", ".").replace(".py", "")
+    else:
+        target = str(file).replace("/", ".").replace(".py", "")
+    module = importlib.import_module(target)
 
-    build_suite = getattr(module, 'build_suite')
+    build_suite = getattr(module, "build_suite")
     try:
         suite = build_suite()
     except Exception as e:
@@ -95,26 +105,24 @@ def run_test(file: Path):
     r = runner.run(suite)
 
     if len(r.errors) > 0 or len(r.failures) > 0:
-        print(f'\n{Style.DIM + Back.LIGHTRED_EX}Something went wrong!{Style.RESET_ALL}\n')
+        print(f"\n{Style.DIM + Back.LIGHTRED_EX}Something went wrong!{Style.RESET_ALL}\n")
     else:
-        print(f'\n{Style.DIM + Back.GREEN}All test passed{Style.RESET_ALL}\n')
+        print(f"\n{Style.DIM + Back.GREEN}All test passed{Style.RESET_ALL}\n")
 
     return r
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     """The main script"""
 
-    parser = argparse.ArgumentParser(
-        description='Run the test'
-    )
+    parser = argparse.ArgumentParser(description="Run the test")
 
     parser.add_argument(
-        '--test',
-        '-t',
+        "--test",
+        "-t",
         type=Path,
-        default='test_quirtylog/',
-        help='Set the single test or a subpackage'
+        default="test_quirtylog/",
+        help="Set the single test or a subpackage",
     )
 
     args = parser.parse_args()
@@ -124,8 +132,8 @@ if __name__ == '__main__':
         _ = run_test(file=filename)
     else:
         results = dict()
-        for test in filename.rglob('test*.py'):
-            print('\n\n')
+        for test in filename.rglob("test*.py"):
+            print("\n\n")
             if test.is_file():
                 res = run_test(file=test)
                 results[test] = res

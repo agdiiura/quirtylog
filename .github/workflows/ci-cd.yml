@@ -42,4 +42,4 @@ jobs:
     - name: Test library
       run: |
         cd tests
-        coverage run suite.py
+        bash battery.sh

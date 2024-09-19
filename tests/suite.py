@@ -59,7 +59,7 @@ class ErrorUnittest(unittest.TestCase):
         )
 
 
-def build_error_suite(module: Path, exception: Exception):
+def build_error_suite(module: Path, exception: Exception) -> unittest.TestSuite:
     """Build a TestSuite object"""
 
     suite = unittest.TestSuite()
@@ -93,7 +93,7 @@ def run_test(file: Path):
     print(
         f"\n{Style.DIM + Back.LIGHTBLUE_EX}{pd.Timestamp.now()}{Style.RESET_ALL}\nReading `{file}` module"
     )
-    if sys.platform in ("win32"):
+    if sys.platform in ["win32"]:
         target = str(file).replace("\\", ".").replace(".py", "")
     else:
         target = str(file).replace("/", ".").replace(".py", "")

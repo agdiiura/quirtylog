@@ -65,6 +65,7 @@ jobs:
       if: startsWith(runner.os, 'Linux')
       run: |
         curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz
+        cd tests
         ls -la
         coveralls --help
 

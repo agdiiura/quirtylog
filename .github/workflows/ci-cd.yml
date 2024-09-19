@@ -64,8 +64,8 @@ jobs:
     - name: Report Coveralls (Linux)
       if: startsWith(runner.os, 'Linux')
       run: |
-        curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz
         cd tests
+        curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz
         ls -la
         coveralls --help
 

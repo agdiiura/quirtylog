@@ -32,7 +32,7 @@ Repository = "https://github.com/agdiiura/quirtylog.git"
 
 [project.optional-dependencies]
 build = [
-    "ruff>=0.5.0",
+    "ruff>=0.6.0",
     "colorama>=0.4.6",
     "coveralls>=4.0.0",
     "isort>=5.12.0",

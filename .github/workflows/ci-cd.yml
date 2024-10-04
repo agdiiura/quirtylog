@@ -69,7 +69,7 @@ jobs:
         coverage-lcov --data_file_path ${COVERAGE_FILE}
         curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz
         ls -la
-        coveralls --help
+        coveralls report --help
 
         ./coveralls debug report
       env:

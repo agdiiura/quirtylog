@@ -65,6 +65,8 @@ jobs:
       if: startsWith(runner.os, 'Linux')
       run: |
         cd tests
+        pip install coverage-lcov
+        coverage-lcov
         curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz
         ls -la
         coveralls --help

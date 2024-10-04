@@ -9,6 +9,7 @@ echo "##########################################"
 
 coverage run suite.py --test $FOLDER
 coverage report -m
+coveralls
 
 echo ""
 echo ""

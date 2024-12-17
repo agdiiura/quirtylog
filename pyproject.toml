@@ -48,9 +48,6 @@ docs = [
     "sphinx-rtd-theme>=2.0.0"
 ]
 
-[tool.setuptools]
-py-modules = []
-
 [tool.ruff]
 src = ['quirtylog']
 line-length = 90

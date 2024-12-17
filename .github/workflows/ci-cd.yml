@@ -23,7 +23,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.12", "3.13"]
         os: [ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
@@ -60,19 +60,3 @@ jobs:
           # `parallel = True` in the coverage config file.
           # If using pytest-cov, you can also add the `--cov-append` flag
           # directly or through PYTEST_ADD_OPTS.
-
-    - name: Report Coveralls (Linux)
-      if: startsWith(runner.os, 'Linux')
-      run: |
-        cd tests
-        pip install coverage-lcov
-        coverage-lcov --data_file_path ${COVERAGE_FILE}
-        curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz
-        ls -la
-        coveralls report --help
-
-        ./coveralls debug report
-      env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
-        COVERAGE_FILE: ".coverage${{ matrix.python-version }}"

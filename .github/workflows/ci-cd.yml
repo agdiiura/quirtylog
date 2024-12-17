@@ -10,13 +10,7 @@ on:
     branches: [ "master" ]
 
 permissions:
-  # Gives the action the necessary permissions for publishing new
-  # comments in pull requests.
-  pull-requests: write
-  # Gives the action the necessary permissions for pushing data to the
-  # python-coverage-comment-action branch, and for editing existing
-  # comments (to avoid publishing multiple comments in the same PR)
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -60,3 +54,13 @@ jobs:
           # `parallel = True` in the coverage config file.
           # If using pytest-cov, you can also add the `--cov-append` flag
           # directly or through PYTEST_ADD_OPTS.
+
+    - name: Store coverage file
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-${{ matrix.python-version }}
+        path: tests/.coverage${{ matrix.python-version }}
+        # By default, hidden files/folders (i.e. starting with .) are ignored.
+        # You may prefer (for security reason) not setting this and instead
+        # set COVERAGE_FILE above to not start with a `.`
+        include-hidden-files: true

@@ -23,7 +23,8 @@ from pathlib import Path
 from test_quirtylog.config import xml_test_folder
 
 from quirtylog.core import (check_path, measure_time, create_logger,
-                            retrieve_name, clear_old_logs, configure_logger)
+                            retrieve_name, clear_old_logs, configure_logger,
+                            display_arguments)
 
 
 def _mock_bad_func():
@@ -368,6 +369,45 @@ class TestMeasureTime(unittest.TestCase):
             shutil.rmtree(cls.log_folder)
 
 
+class TestDisplayArguments(unittest.TestCase):
+    """Test the display_arguments function"""
+
+    @classmethod
+    def setUpClass(cls):
+        """Set the test context"""
+
+        cls.log_folder = Path("logs/").absolute()
+        if cls.log_folder.exists():
+            shutil.rmtree(cls.log_folder)
+
+        cls.log_folder.mkdir(exist_ok=True)
+
+    def test_call(self):
+        """Test a good function"""
+
+        t = 5
+        logger = create_logger(log_path=self.log_folder, name="my-logger")
+
+        @display_arguments(logger=logger)
+        def _mock_func(x, t: int = 3):
+            time.sleep(t)
+            return 1
+
+        _mock_func(x=0, t=t)
+
+        with open(self.log_folder / "info.log", "r") as f:
+            content = f.read()
+
+        self.assertIn("_mock_func(x=0, t=5)", content)
+
+    @classmethod
+    def tearDownClass(cls):
+        """Clean the test context"""
+
+        if cls.log_folder.exists():
+            shutil.rmtree(cls.log_folder)
+
+
 def build_suite():
     """Build the TestSuite"""
     suite = unittest.TestSuite()
@@ -394,6 +434,8 @@ def build_suite():
 
     suite.addTest(TestMeasureTime("test_good_function"))
     suite.addTest(TestMeasureTime("test_bad_function"))
+
+    suite.addTest(TestDisplayArguments("test_call"))
 
     return suite
 

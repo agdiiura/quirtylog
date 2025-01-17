@@ -28,7 +28,13 @@ import coloredlogs
 
 from .sqlite_logger import SQLiteHandler
 
-__all__ = ["configure_logger", "create_logger", "measure_time", "clear_old_logs"]
+__all__ = [
+    "configure_logger",
+    "create_logger",
+    "measure_time",
+    "display_arguments",
+    "clear_old_logs",
+]
 
 path_matcher = re.compile(r"\$\{([^}^{]+)\}")
 
@@ -344,6 +350,55 @@ def measure_time(logger: logging.Logger, level: str = "info"):
 
                 # re-raise the exception
                 raise e
+
+        return wrapper
+
+    return decorator
+
+
+def display_arguments(logger: logging.Logger, level: str = "info"):
+    """
+    Create a decorator for showing information about function signature with a specified logger.
+
+    This decorator wraps the provided function measuring time, logging arguments.
+
+    :param logger: The logging object to be used for logging exceptions.
+    :param level: The logging level for info messages (default: 'info').
+        Possible values: {'info', 'debug', 'warning', 'error'}.
+
+    :return: The decorator function.
+
+    Usage:
+
+    .. code-block:: python
+
+        @display_arguments(logger=my_logger, level='error')
+        def my_function():
+            # Function implementation
+
+
+    Example:
+
+    .. code-block:: python
+
+        @display_arguments(logger=my_logger, level='error')
+        def my_sum(a, b):
+            return a + b
+
+        result = my_sum(10, b=0)  # Logs the my_sum(a=10, b=0)
+
+    """
+    lgr = getattr(logger, level)
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            func_args = inspect.signature(func).bind(*args, **kwargs).arguments
+            func_args_str = ", ".join(map("{0[0]}={0[1]!r}".format, func_args.items()))
+
+            lgr(f"{func.__module__}.{func.__qualname__}({func_args_str})")
+
+            return func(*args, **kwargs)
 
         return wrapper
 

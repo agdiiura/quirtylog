@@ -75,7 +75,10 @@ def retrieve_name(var) -> str:
     """
 
     callers_local_vars = inspect.currentframe().f_back.f_locals.items()
-    return [var_name for var_name, var_val in callers_local_vars if var_val is var][0]
+    try:
+        return [var_name for var_name, var_val in callers_local_vars if var_val is var][0]
+    except IndexError:
+        return "unknown"
 
 
 def path_constructor(loader, node, log_path: str | Path = "logs") -> str:
@@ -110,7 +113,9 @@ def path_constructor(loader, node, log_path: str | Path = "logs") -> str:
     """
     value = node.value
     match = path_matcher.match(value)
-    return str(log_path) + value[match.end() :]
+    if match:
+        return str(log_path) + value[match.end() :]
+    return str(value)
 
 
 def check_path(var: str | Path, name: str = "value") -> Path:
@@ -139,7 +144,7 @@ def check_path(var: str | Path, name: str = "value") -> Path:
     if isinstance(var, str):
         var = Path(var)
     elif not isinstance(var, Path):
-        raise TypeError(f"`{name}` is Path object")
+        raise TypeError(f"`{name}` must be a str or Path object")
     return var
 
 
@@ -385,7 +390,7 @@ def display_arguments(logger: logging.Logger, level: str = "info"):
         def my_sum(a, b):
             return a + b
 
-        result = my_sum(10, b=0)  # Logs the my_sum(a=10, b=0)
+        result = my_sum(10, b=0)  # Logs my_sum(a=10, b=0)
 
     """
     lgr = getattr(logger, level)
@@ -396,7 +401,9 @@ def display_arguments(logger: logging.Logger, level: str = "info"):
             func_args = inspect.signature(func).bind(*args, **kwargs).arguments
             func_args_str = ", ".join(map("{0[0]}={0[1]!r}".format, func_args.items()))
 
-            lgr(f"{func.__module__}.{func.__qualname__}({func_args_str})")
+            lgr(
+                f"Executing function {func.__module__}.{func.__qualname__}({func_args_str})"
+            )
 
             return func(*args, **kwargs)
 

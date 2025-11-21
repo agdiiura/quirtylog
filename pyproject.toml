@@ -11,6 +11,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quirtylog"
 version = "0.6.1"
+requires-python = ">=3.12"
 readme = "README.md"
 authors = [
     {name = "agdiiura", email="andreadiiura@gmail.com"}

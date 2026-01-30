@@ -22,7 +22,7 @@ Dependencies:
     Ensure that the required dependencies are installed before running this script.
 
 """
-
+from __future__ import annotations
 import sys
 import argparse
 import unittest

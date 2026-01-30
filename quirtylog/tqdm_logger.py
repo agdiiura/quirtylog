@@ -6,6 +6,7 @@ tqdm_logger.py
 This module provides utilities for redirecting TQDM (progress bar library) output to a logger.
 
 """
+from __future__ import annotations
 import io
 import time
 import logging

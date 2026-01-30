@@ -6,6 +6,7 @@ sqlite_logger.py
 This module provides the SQLiteHandler class, a thread-safe logging handler
 for storing log records in an SQLite database.
 """
+from __future__ import annotations
 import time
 import logging
 import sqlite3

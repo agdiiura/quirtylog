@@ -8,7 +8,7 @@ Test the core module
 To run the code
 $ python test_core.py
 """
-
+from __future__ import annotations
 import re
 import time
 import shutil

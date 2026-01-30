@@ -13,7 +13,7 @@ This module contains utility functions for logging and file management.
     Ensure to review the individual docstrings for each function for detailed information and usage examples.
 
 """
-
+from __future__ import annotations
 import re
 import time
 import inspect
